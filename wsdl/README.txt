@@ -1,1 +1,1 @@
-Put your solution here
+Put your WSDL file(s) here
