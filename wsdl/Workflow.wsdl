@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions name="Workflow" targetNamespace="http://lucamannella.altervista.org/WorkflowManager/"
+				xmlns:wf="http://lucamannella.altervista.org/WorkflowManager/"
+				xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+				xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+				xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" >
+				
+	<wsdl:types>
+	<xsd:schema version="1.0" targetNamespace="http://lucamannella.altervista.org/WorkflowManager/">
+	
+		<xsd:element name="getWorkflowNames" type="wf:getWorkflowNames" />
+		<xsd:element name="getWorkflowNamesResponse" type="wf:getWorkflowNamesResponse" />
+		<xsd:element name="getWorkflows" type="wf:getWorkflows" />
+		<xsd:element name="getWorkflowsResponse" type="wf:getWorkflowsResponse" />
+		<xsd:element name="UnknownNames" type="wf:UnknownNames" />
+		
+					
+		<xsd:complexType name="getWorkflowNames">
+			<xsd:sequence />
+		</xsd:complexType>
+		
+		<xsd:complexType name="getWorkflowNamesResponse">
+			<xsd:sequence>
+				<xsd:element name="lastModTime" type="xsd:dateTime" />
+				<xsd:element name="name" type="wf:Name" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+		
+		<xsd:complexType name="getWorkflows">
+			<xsd:sequence>
+				<xsd:element name="wfname" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+		
+		<xsd:complexType name="getWorkflowsResponse">
+			<xsd:sequence>
+				<xsd:element name="lastModTime" type="xsd:dateTime" />
+				<xsd:element name="workflow" type="wf:workflow"	minOccurs="0" maxOccurs="unbounded">
+					<xsd:key name="actionKey">
+						<xsd:selector xpath="action" />
+						<xsd:field xpath="name" />
+					</xsd:key>
+					<xsd:keyref name="nextActionKeyRef" refer="wf:actionKey">
+						<xsd:selector xpath="action" />
+						<xsd:field xpath="nextAction" />
+					</xsd:keyref>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+		
+		<xsd:complexType name="UnknownNames">
+			<xsd:sequence>
+				<xsd:element name="message" type="xsd:string" minOccurs="0" />
+				<xsd:element name="names" type="wf:Name" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	
+		<xsd:simpleType name="Name">
+			<xsd:restriction base="xsd:string">
+				<xsd:pattern value="[a-zA-Z][a-zA-Z0-9]*" />
+			</xsd:restriction>
+		</xsd:simpleType>
+		
+				<xsd:complexType name="workflow">
+			<xsd:sequence>
+				<xsd:element name="name" type="wf:Name" />
+				<xsd:element name="action" type="wf:action" nillable="true" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+		
+		<xsd:complexType name="action">
+			<xsd:sequence>
+				<xsd:element name="name" type="wf:Name" />
+				<xsd:element name="automaticallyInstantiated" type="xsd:boolean" />
+				<xsd:element name="role" type="wf:Role" />
+				<xsd:choice>
+					<xsd:element name="nextAction" type="wf:Name" nillable="true" minOccurs="0" maxOccurs="unbounded" />
+					<xsd:element name="workflow" type="wf:Name" minOccurs="0" />
+				</xsd:choice>
+			</xsd:sequence>
+		</xsd:complexType>
+	
+		<xsd:simpleType name="Role">
+			<xsd:restriction base="xsd:string">
+				<xsd:pattern value="[a-zA-Z ]*" />
+			</xsd:restriction>
+		</xsd:simpleType>
+		
+	</xsd:schema>
+	</wsdl:types>	
+
+	<wsdl:message name="getWorkflowNames">
+		<wsdl:part name="parameters" element="wf:getWorkflowNames" />
+	</wsdl:message>
+	<wsdl:message name="getWorkflowNamesResponse">
+		<wsdl:part name="parameters" element="wf:getWorkflowNamesResponse" />
+	</wsdl:message>
+	<wsdl:message name="getWorkflows">
+		<wsdl:part name="parameters" element="wf:getWorkflows" />
+	</wsdl:message>
+	<wsdl:message name="getWorkflowsResponse">
+		<wsdl:part name="parameters" element="wf:getWorkflowsResponse" />
+	</wsdl:message>
+	<wsdl:message name="UnknownNames">
+		<wsdl:part name="fault" element="wf:UnknownNames" />
+	</wsdl:message>
+	
+	<wsdl:portType name="WorkflowInterface">
+		<wsdl:operation name="getWorkflowNames">
+			<wsdl:documentation>
+				Returns the list of names of the workflows provided by the service.
+			</wsdl:documentation>
+    		<wsdl:input message="wf:getWorkflowNames"/>
+    		<wsdl:output message="wf:getWorkflowNamesResponse"/>
+		</wsdl:operation>
+	
+		<wsdl:operation name="getWorkflows">
+			<wsdl:documentation>
+				Returns the details of the workflows whose names are passed as argument.
+				If the argument is null, the information about all the workflows are returned.
+			</wsdl:documentation>
+    		<wsdl:input message="wf:getWorkflows"/>
+    		<wsdl:output message="wf:getWorkflowsResponse"/>
+    		<wsdl:fault message="wf:UnknownNames" name="UnknownNames"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	
+	<wsdl:binding name="WorkflowPortBinding" type="wf:WorkflowInterface">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		
+		<wsdl:operation name="getWorkflowNames">
+			<soap:operation soapAction="" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		
+		<wsdl:operation name="getWorkflows">
+			<soap:operation soapAction="" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="UnknownNames">
+				<soap:fault name="UnknownNames" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	
+	<wsdl:service name="WorkflowService">
+    	<wsdl:port name="WorkflowPort" binding="wf:WorkflowPortBinding">
+			<soap:address location="http://www.example.org/"/>
+		</wsdl:port>
+	</wsdl:service>
+	
+</wsdl:definitions>
