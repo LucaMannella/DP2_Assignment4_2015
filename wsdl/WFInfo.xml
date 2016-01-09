@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <?xml-stylesheet type="text/xsl" href="style.xsl"?> -->
+<wf:WorkflowManager 
+	xmlns:wf="http://lucamannella.altervista.org/WFInfo" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://lucamannella.altervista.org/WFInfo WFInfo.xsd ">
+
+	<wf:workflow name="ArticleProduction">
+		<wf:action id="ArticleProduction_Writing" name="Writing" role="Journalist" automInst="true">
+			<wf:simple_action nextActions="ArticleProduction_Checking" />
+		</wf:action>
+		<wf:action id="ArticleProduction_Checking" name="Checking" role="Editor" automInst="false">
+			<wf:simple_action nextActions="ArticleProduction_Revising ArticleProduction_Publication" />
+		</wf:action>
+		<wf:action id="ArticleProduction_Revising" name="Revising" role="Journalist" automInst="false">
+			<wf:simple_action nextActions="ArticleProduction_Checking" />
+		</wf:action>
+		<wf:action id="ArticleProduction_Publication" name="Publication" role="Editor" automInst="false">
+			<wf:simple_action />
+		</wf:action>
+	</wf:workflow>
+	
+	<wf:workflow name="SaleManagement">
+		<wf:action id="SaleManagement_AcceptOrder" name="AcceptOrder" role="Salesman" automInst="true">
+			<wf:simple_action nextActions="SaleManagement_NormalSale SaleManagement_PrepaidSale" />
+		</wf:action>
+		<wf:action id="SaleManagement_NormalSale" name="NormalSale" role="SalesManager" automInst="false">
+			<wf:process_action nextProcess="NormalSale" />
+		</wf:action>
+		<wf:action id="SaleManagement_PrepaidSale" name="PrepaidSale" role="SalesManager" automInst="false">
+			<wf:process_action nextProcess="PrepaidSale" />
+		</wf:action>
+	</wf:workflow>
+	
+	<wf:workflow name="NormalSale">
+		<wf:action id="NormalSale_GoodsDelivery" name="GoodsDelivery" role="Warehouseman" automInst="true">
+			<wf:simple_action />
+		</wf:action>
+		<wf:action id="NormalSale_InvoiceIssuance" name="InvoiceIssuance" role="Accountingman" automInst="true">
+			<wf:simple_action nextActions="NormalSale_PaymentRec" />
+		</wf:action>
+		<wf:action id="NormalSale_PaymentRec" name="PaymentRec" role="Accountingman" automInst="false">
+			<wf:simple_action />
+		</wf:action>
+	</wf:workflow>
+	
+	<wf:workflow name="PrepaidSale">
+		<wf:action id="PrepaidSale_InvoiceIssuance" name="InvoiceIssuance" role="Accountingman" automInst="true">
+			<wf:simple_action nextActions="PrepaidSale_PaymentRec" />
+		</wf:action>
+		<wf:action id="PrepaidSale_PaymentRec" name="PaymentRec" role="Accountingman" automInst="false">
+			<wf:simple_action nextActions="PrepaidSale_GoodsDelivery" />
+		</wf:action>
+		<wf:action id="PrepaidSale_GoodsDelivery" name="GoodsDelivery" role="Warehouseman" automInst="false">
+			<wf:simple_action />
+		</wf:action>
+	</wf:workflow>
+	
+	
+	<wf:process code="p1" started="2015-10-20T08:30:10Z" workflow="ArticleProduction">
+		<wf:action_status action="ArticleProduction_Writing" actor="John Doe" timestamp="2015-10-20T16:12:01Z" takenInCharge="true" terminated="true"/>
+		<wf:action_status action="ArticleProduction_Checking" actor="Marco Rossi" timestamp="2015-10-20T18:29:02Z" takenInCharge="true" terminated="true"/>
+		<wf:action_status action="ArticleProduction_Revising" actor="John Doe" timestamp="2015-10-21T10:11:03Z" takenInCharge="true" terminated="true"/>
+		<wf:action_status action="ArticleProduction_Publication" actor="Marco Rossi" timestamp="2015-10-21T11:51:04Z" takenInCharge="true" terminated="true"/>
+	</wf:process>
+	
+	<wf:process code="p2" started="2015-10-20T08:35:10Z" workflow="ArticleProduction">
+		<wf:action_status action="ArticleProduction_Writing" actor="Nik Wales" timestamp="2015-10-20T15:45:05Z" takenInCharge="true" terminated="true"/>
+		<wf:action_status action="ArticleProduction_Checking" actor="Marco Rossi" timestamp="2015-10-20T18:20:06Z" takenInCharge="true" terminated="true" />
+		<wf:action_status action="ArticleProduction_Revising" actor="John Doe" takenInCharge="true" terminated="false" />
+		<wf:action_status action="ArticleProduction_Publication" takenInCharge="false" terminated="false"/>
+	</wf:process>
+	
+	<wf:process code="p3" started="2015-10-19T13:30:05Z" workflow="SaleManagement">
+		<wf:action_status action="SaleManagement_AcceptOrder" actor="Jack Jamson" timestamp="2015-10-19T13:42:07Z" takenInCharge="true" terminated="true"/>
+		<wf:action_status action="SaleManagement_NormalSale" actor="Mario Bianchi" timestamp="2015-10-20T09:01:08Z" takenInCharge="true" terminated="true"/>
+	</wf:process>
+	
+	<wf:process code="p4" started="2015-10-20T09:01:11Z" workflow="NormalSale">
+		<wf:action_status action="NormalSale_GoodsDelivery" actor="Tom Tomson" timestamp="2015-10-20T11:23:09Z" takenInCharge="true" terminated="true"/>
+		<wf:action_status action="NormalSale_InvoiceIssuance" actor="Bruno Verdi" timestamp="2015-10-21T09:04:10Z" takenInCharge="true" terminated="true"/>
+		<wf:action_status action="NormalSale_PaymentRec" actor="Bruno Verdi"  takenInCharge="true" terminated="false"/>
+	</wf:process>
+	
+	<wf:process code="p5" started="2015-10-19T13:37:00Z" workflow="SaleManagement">
+		<wf:action_status action="SaleManagement_AcceptOrder" actor="Stefano Villa" timestamp="2015-10-19T13:43:11Z" takenInCharge="true" terminated="true"/>
+		<wf:action_status action="SaleManagement_PrepaidSale" actor="Mario Bianchi" timestamp="2015-10-20T09:00:12Z" takenInCharge="true" terminated="true"/>
+	</wf:process>
+	
+	<wf:process code="p6" started="2015-10-20T09:00:36Z" workflow="PrepaidSale">
+		<wf:action_status action="PrepaidSale_InvoiceIssuance"  takenInCharge="false" terminated="false"/>
+	</wf:process>
+
+	<wf:actors>
+		<wf:actor name="John Doe" role="Journalist"/>
+		<wf:actor name="Marco Rossi" role="Editor"/>
+		<wf:actor name="Jack Jamson" role="Salesman"/>
+		<wf:actor name="Mario Bianchi" role="SalesManager"/>
+		<wf:actor name="Tom Tomson" role="Warehouseman"/>
+		<wf:actor name="Bruno Verdi" role="Accountingman"/>
+		<wf:actor name="Nik Wales" role="Journalist"/>
+		<wf:actor name="Stefano Villa" role="Salesman"/>
+		<wf:actor name="Andrew Silver" role="Warehouseman"/>
+	</wf:actors>
+
+</wf:WorkflowManager>
+
+<!-- This XML file was developed by Luca Mannella for the Assignment 2
+	 of the course Distributed Programming II in Politechnic University of Turin. -->

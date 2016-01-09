@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" 
+	targetNamespace="http://lucamannella.altervista.org/WFInfo" 
+	xmlns:wf="http://lucamannella.altervista.org/WFInfo" >
+	<annotation>
+		<documentation> This is an XML Schema for a Workflow Management System. </documentation>
+	</annotation>
+	
+	<element name="WorkflowManager">
+		<complexType>
+			<sequence>
+				<element ref="wf:workflow" minOccurs="0" maxOccurs="unbounded" />
+				<element ref="wf:process" minOccurs="0" maxOccurs="unbounded" />
+				<element ref="wf:actors" minOccurs="0" maxOccurs="unbounded" />
+			</sequence>
+		</complexType>
+		
+		<!-- Each workflow has a unique @name !-->
+		<key name="workflow_key">			
+			<selector xpath="wf:workflow" />
+			<field xpath="@name" />
+		</key>
+		<!-- The attribute workflow inside process points to a workflow element !-->
+		<keyref name="workflow_ps_ref" refer="wf:workflow_key">	
+			<selector xpath="wf:process" />
+			<field xpath="@workflow" />
+		</keyref>
+		<!-- A processAction points to the relatve workflow element !-->
+		<keyref name="workflow_action_ref" refer="wf:workflow_key">	
+			<selector xpath="wf:workflow/wf:action/wf:process_action" />
+			<field xpath="@nextProcess" />
+		</keyref>
+		
+    	<!-- The attribute actor inside action_status points to the relative actor element -->
+    	<keyref name="actor_key_ref" refer="wf:actor_key">
+    		<selector xpath="wf:process/wf:action_status" />
+    		<field xpath="@actor" />
+    	</keyref>
+    	
+    	<!-- Each process has a unique @code !-->
+		<key name="process_key">			
+			<selector xpath="wf:process" />
+			<field xpath="@code" />
+		</key>
+		
+    	<!-- Each department has a unique name !-->
+		<unique name="unique_department">			
+			<selector xpath="wf:actors" />
+			<field xpath="@department" />
+		</unique>
+		<!-- Each actor has a unique name !-->
+		<key name="actor_key">			
+			<selector xpath="wf:actors/wf:actor" />
+			<field xpath="@name" />
+		</key>
+	</element>
+	
+	
+	<element name="workflow">
+		<complexType>
+			<sequence>
+				<element name="action" type="wf:action_type" minOccurs="1" maxOccurs="unbounded" />
+			</sequence>
+			
+			<!-- Può essere una bella idea inserire un riferimento ai processi -->
+			<attribute name="name" type="token" use="required" />
+		</complexType>
+		
+		<!-- Each key has a unique name inside its workflow -->
+		<unique name="unique_action">
+			<selector xpath="wf:action" />
+			<field xpath="@name" />
+		</unique>
+	</element>
+
+	<complexType name="action_type">
+		<choice>
+			<element name="simple_action">
+				<complexType>
+					<attribute name="nextActions" type="IDREFS" use="optional" />
+					<!-- Using ID & IDREFS guaranteed uniqueness of the reference !-->
+				</complexType>
+			</element>
+			<element name="process_action">
+				<complexType>
+					<attribute name="nextProcess" type="token" use="required" />
+				</complexType>
+			</element>
+		</choice>
+		<!-- The id is built using "workflowName_actionName" !-->
+		<attribute name="id" type="ID" use="required" />
+		<attribute name="name" type="token" use="required" />
+		<attribute name="role" type="token" use="required" />
+		<attribute name="automInst" type="boolean" default="false" />
+	</complexType>
+	
+	
+	<element name="process">
+		<complexType>
+			<sequence>
+				<element name="action_status" type="wf:action_status_type" minOccurs="1" maxOccurs="unbounded"/>
+			</sequence>
+			
+			<attribute name="code" type="token" />
+			<attribute name="started" type="dateTime" use="required" /> 
+			<attribute name="workflow" type="token" use="required" />
+		</complexType>
+	</element>
+	
+	<complexType name="action_status_type">
+		<attribute name="action" type="IDREF" use="required" />
+		<attribute name="actor" type="token" use="optional" />
+		<attribute name="timestamp" type="dateTime" use="optional" />
+		<attribute name="terminated" type="boolean" use="required" />
+		<attribute name="takenInCharge" type="boolean" use="required" />
+	</complexType>
+
+
+	<element name="actors">	
+		<complexType>
+			<sequence>
+				<element name="actor" minOccurs="0" maxOccurs="unbounded">
+					<complexType>
+						<attribute name="name" type="string" use="required" />
+						<attribute name="role" type="token" use="required" />
+					</complexType>
+				</element>
+			</sequence>
+			
+			<attribute name="department" type="token" use="optional"/>
+		</complexType>
+	</element>
+	
+</schema>
