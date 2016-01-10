@@ -107,7 +107,7 @@
 			<xsd:complexType>
 				<xsd:sequence>
 					<xsd:element name="psCode" type="xsd:token" />
-					<xsd:element name="actorName" type="xsd:string" />
+					<xsd:element ref="wf:actor" />
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:element>
@@ -382,24 +382,72 @@
 				<soap:fault name="UnknownNames" use="literal" />
 			</wsdl:fault>
 		</wsdl:operation>
-	</wsdl:binding>
-
-	<wsdl:binding name="ActionPortBinding" type="wfm:ActionInterface">
-		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
-		<wsdl:operation name="getActions">
-			<soap:operation
-				soapAction="" />	<!-- "http://lucamannella.altervista.org/WorkflowManager/getActions" !-->
+		
+		<wsdl:operation name="createNewProcess">
+			<soap:operation	soapAction="" />	<!-- http://lucamannella.altervista.org/WorkflowManager/createNewProcess !-->
 			<wsdl:input>
 				<soap:body use="literal" />
 			</wsdl:input>
 			<wsdl:output>
 				<soap:body use="literal" />
 			</wsdl:output>
+			<wsdl:fault name="UnknownNames">
+				<soap:fault name="UnknownNames" use="literal" />
+			</wsdl:fault>
 		</wsdl:operation>
 	</wsdl:binding>
-	
-	
-	<wsdl:service name="Workflow">
+
+	<wsdl:binding name="ActionPortBinding" type="wfm:ActionInterface">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		
+		<wsdl:operation name="getActions">
+			<soap:operation soapAction="" />	<!-- "http://lucamannella.altervista.org/WorkflowManager/getActions" !-->
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="UnknownCode">
+				<soap:fault name="UnknownCode" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+			
+		<wsdl:operation name="takeOverAction">
+			<soap:operation soapAction="" />	<!-- http://lucamannella.altervista.org/WorkflowManager/takeOverAction -->
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="faultCode">
+				<soap:fault name="faultCode" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="faultActorName">
+				<soap:fault name="faultActorName" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		
+		<wsdl:operation name="completeAction">
+			<soap:operation soapAction="" />	<!-- "http://lucamannella.altervista.org/WorkflowManager/completeAction" -->
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="faultActName">
+				<soap:fault name="faultActName" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="faultNextActName">
+				<soap:fault name="faultNextActName" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+
+
+	<wsdl:service name="WorkflowService">
     	<wsdl:port name="WorkflowPort" binding="wfm:WorkflowPortBinding">
 			<soap:address location="http://www.example.org:7070/"/>
 		</wsdl:port>
