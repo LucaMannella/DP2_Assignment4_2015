@@ -5,7 +5,7 @@
 			Script for WF Assignment 4
 	</description>
 
-	<!-- The lolcation of this assignment -->
+	<!-- The location of this assignment -->
 	<property name="lab4.location" location="." />
 
 	<!-- The random "WorkflowMonitorFactory" used for WFInfo, for the server and for the tests -->
