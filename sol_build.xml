@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="WF-4 my Ant" default="main" basedir=".">
+	<description>
+		This is a Script created by Luca Mannella for WF Assignment 4.
+	</description>
+
+	<!-- Properties !-->
+	<property name="buildDir" location="${basedir}/build" />
+	<property name="genDir" location="${basedir}/gen-src" />
+	<property name="WSDLpath" location="${basedir}/wsdl/Workflow.wsdl" />
+
+	<property name="package" value="it.polito.dp2.WF.lab4.gen"/>
+	<property name="custom.option" value=""/>
+	
+	<!-- Targets !-->
+	<target name="init">
+		<echo> Creating folders... </echo>
+		<mkdir dir="${buildDir}" />
+		<mkdir dir="${genDir}" />
+	</target>
+
+	<!-- Clean !-->
+	<target name="clean" description="Clean generated files and class files">
+		<delete dir="${buildDir}" />
+		<delete dir="${genDir}" />
+	</target>
+	
+	<!-- define the "compile.wsdl" target -->
+	<target name="compile-wsdl" depends="init" description="Compile WSDL and generate bindings">
+	    <echo> Wsdl location --> "${WSDLpath}" </echo>
+	    <exec executable="wsimport">
+	        <arg line="${custom.option} -d '${buildDir}' -p '${package}' -s '${genDir}' -keep ${WSDLpath}"/>
+	    </exec>
+	</target>   
+
+	<target name="build-server">
+		<echo>Building the server</echo>
+	</target>
+
+	<echo message="calling the web services generation ant task: axis_tdjava"/>
+	<target name="main" >
+		<wsgen/>
+	</target>
+  
+</project>
