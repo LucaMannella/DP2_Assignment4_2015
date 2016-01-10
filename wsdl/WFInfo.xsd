@@ -3,7 +3,10 @@
 	targetNamespace="http://lucamannella.altervista.org/WFInfo" 
 	xmlns:wf="http://lucamannella.altervista.org/WFInfo" >
 	<annotation>
-		<documentation> This is an XML Schema for a Workflow Management System. </documentation>
+		<documentation>
+			This is an XML Schema for a Workflow Management System.
+			It is similar to the one developed for the Assignment 2 but it was slightly changed to be more adaptive to the new requests.
+		</documentation>
 	</annotation>
 	
 	<element name="WorkflowManager">
@@ -119,15 +122,17 @@
 	<element name="actors">	
 		<complexType>
 			<sequence>
-				<element name="actor" minOccurs="0" maxOccurs="unbounded">
-					<complexType>
-						<attribute name="name" type="string" use="required" />
-						<attribute name="role" type="token" use="required" />
-					</complexType>
-				</element>
+				<element ref="wf:actor" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 			
 			<attribute name="department" type="token" use="optional"/>
+		</complexType>
+	</element>
+	
+	<element name="actor">
+		<complexType>
+			<attribute name="name" type="string" use="required" />
+			<attribute name="role" type="token" use="required" />
 		</complexType>
 	</element>
 	
