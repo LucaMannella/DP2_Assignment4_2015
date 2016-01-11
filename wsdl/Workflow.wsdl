@@ -6,7 +6,7 @@
 				xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" >
 	<wsdl:documentation>
     	Service: WorkflowService
-    	Version: 1.0
+    	Version: 2.0
     	Owner: Luca Mannella
     </wsdl:documentation>
   			
@@ -253,8 +253,8 @@
 	</wsdl:message>
 	
 	
-	<wsdl:portType name="WorkflowInterface">
-		<wsdl:documentation>This interface is related to the feature of the Workflows.</wsdl:documentation>
+	<wsdl:portType name="WorkflowInfoInterface">
+		<wsdl:documentation>This interface allows to read the informations related to the Workflows.</wsdl:documentation>
 		
 		<wsdl:operation name="getWorkflowNames">
 			<wsdl:documentation>
@@ -274,10 +274,6 @@
     		<wsdl:output message="wfm:getWorkflowsResponse"/>
     		<wsdl:fault name="UnknownNames" message="wfm:UnknownNames"/>
 		</wsdl:operation>
-	</wsdl:portType>
-
-	<wsdl:portType name="ProcessInterface">
-		<wsdl:documentation>This interface is related to the feature of the Processes.</wsdl:documentation>
 		
 		<wsdl:operation name="getProcesses">
 			<wsdl:documentation>
@@ -290,7 +286,21 @@
             <wsdl:fault name="UnknownNames" message="wfm:UnknownNames"/>
         </wsdl:operation>
         
-		<wsdl:operation name="createNewProcess">
+        <wsdl:operation name="getActions">
+			<wsdl:documentation>
+				Returns the details of the Actions related to the name of the Processes that are passed as argument.
+				If the code of the process is not recognized a fault message will be returned.
+			</wsdl:documentation>
+			<wsdl:input message="wfm:getActions" />
+			<wsdl:output message="wfm:getActionsResponse" />
+            <wsdl:fault name="UnknownCode" message="wfm:UnknownCode" />
+        </wsdl:operation>
+	</wsdl:portType>
+
+	<wsdl:portType name="WorkflowControllerInterface">
+		<wsdl:documentation>This interface allows to control the informations related to the Workflows.</wsdl:documentation>
+        
+        <wsdl:operation name="createNewProcess">
 			<wsdl:documentation>
 				This operation creates new processes and it returns it.
 				The new processes are initially created with only the automatically instantiated actions. 
@@ -300,20 +310,6 @@
 			<wsdl:input message="wfm:createNewProcess"/>
 			<wsdl:output message="wfm:createNewProcessResponse"/>
             <wsdl:fault name="UnknownNames" message="wfm:UnknownNames" />
-        </wsdl:operation>
-	</wsdl:portType>
-	
-	<wsdl:portType name="ActionInterface">
-		<wsdl:documentation>This interface is related to the feature of the ActionStatus inside the Processes.</wsdl:documentation>
-		
-		<wsdl:operation name="getActions">
-			<wsdl:documentation>
-				Returns the details of the Actions related to the name of the Processes that are passed as argument.
-				If the code of the process is not recognized a fault message will be returned.
-			</wsdl:documentation>
-			<wsdl:input message="wfm:getActions" />
-			<wsdl:output message="wfm:getActionsResponse" />
-            <wsdl:fault name="UnknownCode" message="wfm:UnknownCode" />
         </wsdl:operation>
 		
 		<wsdl:operation name="takeOverAction">
@@ -340,7 +336,7 @@
 	</wsdl:portType>
 	
 	
-	<wsdl:binding name="WorkflowPortBinding" type="wfm:WorkflowInterface">
+	<wsdl:binding name="WorkflowInfoPortBinding" type="wfm:WorkflowInfoInterface">
 		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
 		
 		<wsdl:operation name="getWorkflowNames">
@@ -366,38 +362,8 @@
 			</wsdl:fault>
 		</wsdl:operation>
 	</wsdl:binding>
-	
-	<wsdl:binding name="ProcessPortBinding" type="wfm:ProcessInterface">
-		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
-		
-		<wsdl:operation name="getProcesses">
-			<soap:operation soapAction="" />	<!-- "http://lucamannella.altervista.org/WorkflowManager/getProcesses" !-->
-			<wsdl:input>
-				<soap:body use="literal" />
-			</wsdl:input>
-			<wsdl:output>
-				<soap:body use="literal" />
-			</wsdl:output>
-			<wsdl:fault name="UnknownNames">
-				<soap:fault name="UnknownNames" use="literal" />
-			</wsdl:fault>
-		</wsdl:operation>
-		
-		<wsdl:operation name="createNewProcess">
-			<soap:operation	soapAction="" />	<!-- http://lucamannella.altervista.org/WorkflowManager/createNewProcess !-->
-			<wsdl:input>
-				<soap:body use="literal" />
-			</wsdl:input>
-			<wsdl:output>
-				<soap:body use="literal" />
-			</wsdl:output>
-			<wsdl:fault name="UnknownNames">
-				<soap:fault name="UnknownNames" use="literal" />
-			</wsdl:fault>
-		</wsdl:operation>
-	</wsdl:binding>
 
-	<wsdl:binding name="ActionPortBinding" type="wfm:ActionInterface">
+	<wsdl:binding name="WorkflowControllerPortBinding" type="wfm:WorkflowControllerInterface">
 		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
 		
 		<wsdl:operation name="getActions">
@@ -448,14 +414,11 @@
 
 
 	<wsdl:service name="WorkflowService">
-    	<wsdl:port name="WorkflowPort" binding="wfm:WorkflowPortBinding">
-			<soap:address location="http://www.example.org:7070/"/>
+    	<wsdl:port name="WorkflowInfoPort" binding="wfm:WorkflowInfoPortBinding">
+			<soap:address location="http://localhost:7071/wfinfo"/>
 		</wsdl:port>
-    	<wsdl:port name="ProcessPort" binding="wfm:ProcessPortBinding">
-    		<soap:address location="http://www.example.org:7171/" />
-    	</wsdl:port>
-    	<wsdl:port name="ActionPort" binding="wfm:ActionPortBinding">
-    		<soap:address location="http://www.example.org:7272/" />
+    	<wsdl:port name="WorkflowControllerPort" binding="wfm:WorkflowControllerPortBinding">
+    		<soap:address location="http://localhost:7070/wfcontrol" />
     	</wsdl:port>
 	</wsdl:service>
 	
