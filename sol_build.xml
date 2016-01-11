@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="WF-4 my Ant" default="main" basedir=".">
+<project name="WF-4 my Ant" default="build-server" basedir=".">
 	<description>
 		This is a Script created by Luca Mannella for WF Assignment 4.
 	</description>
 
 	<!-- Properties !-->
+	<property name="srcDir" location="${basedir}/src" />
 	<property name="buildDir" location="${basedir}/build" />
 	<property name="genDir" location="${basedir}/gen-src" />
+	<property name="libDir" location="${basedir}/lib" />
 	<property name="WSDLpath" location="${basedir}/wsdl/Workflow.wsdl" />
 
-	<property name="package" value="it.polito.dp2.WF.lab4.gen"/>
+	<property name="package" value="it.polito.dp2.WF.sol4.gen"/>
 	<property name="custom.option" value=""/>
 	
-	<!-- Targets !-->
+	<property name="debug" value="true" />
+	<property name="debugLevel" value="source,lines,vars" />
+	<property name="javaVersion" value="1.7" />
+	
+	<!-- Init !-->
 	<target name="init">
 		<echo> Creating folders... </echo>
 		<mkdir dir="${buildDir}" />
@@ -27,7 +33,7 @@
 		<delete dir="${genDir}" />
 	</target>
 	
-	<!-- define the "compile.wsdl" target -->
+	<!-- Artifacts Generation !-->
 	<target name="compile-wsdl" depends="init" description="Compile WSDL and generate bindings">
 	    <echo> Wsdl location --> "${WSDLpath}" </echo>
 	    <exec executable="wsimport">
@@ -35,13 +41,24 @@
 	    </exec>
 	</target>
 
-	<target name="build-server">
-		<echo>Building the server</echo>
+	<!-- Server Building !-->
+	<target name="build-server" depends="init, compile-wsdl" description="">
+		<echo> Building the server... </echo>
+		<javac destdir="${buildDir}" debug="${debug}" debuglevel="${debugLevel}" source="${javaVersion}" target="${javaVersion}" includeantruntime="false">
+			<src path="${srcDir}"/>
+			<src path="${genDir}"/>
+			<include name="it/polito/dp2/WF/sol4/**" />
+			<include name="it/polito/dp2/WF/lab4/*.java" />
+			<classpath>
+				<path refid="sol.classpath" />
+			</classpath>
+		</javac>
+		<echo>Done.</echo>
 	</target>
-
-	<echo message="calling the web services generation ant task: axis_tdjava"/>
-	<target name="main" >
-		<wsgen/>
-	</target>
+	
+	<!-- The classpath to be used for compilation of the solution -->
+	<path id="sol.classpath">
+		<pathelement location="${libDir}/WF.jar"/>
+	</path>
   
 </project>
