@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions name="Workflow" targetNamespace="http://lucamannella.altervista.org/WorkflowManager/"
+				xmlns:wfm="http://lucamannella.altervista.org/WorkflowManager/"
+				xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+				xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+				xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" >
+	<wsdl:documentation>
+    	Service: WorkflowService
+    	Version: 1.0
+    	Owner: Luca Mannella
+    </wsdl:documentation>
+  			
+	<wsdl:types>
+	<xsd:schema version="1.0" targetNamespace="http://lucamannella.altervista.org/WorkflowManager/"
+		xmlns:wf="http://lucamannella.altervista.org/WFInfo" >
+		<xsd:import namespace="http://lucamannella.altervista.org/WFInfo" schemaLocation="WFInfo.xsd"/>
+
+		<xsd:element name="getWorkflowNames" type="wfm:getWorkflowNames" />
+		<xsd:element name="getWorkflowNamesResponse" type="wfm:getWorkflowNamesResponse" />
+		<xsd:element name="getWorkflows" type="wfm:getWorkflows" />
+		<xsd:element name="getWorkflowsResponse" type="wfm:getWorkflowsResponse" />
+		
+		<xsd:element name="UnknownNames" type="wfm:UnknownNames" />
+		<xsd:element name="UnknownCode" type="wfm:UnknownCode" />
+		<xsd:element name="UnknownActorName" type="wfm:UnknownActorName" />
+		<xsd:element name="UnknownActionName" type="wfm:UnknownActionName" />
+		<xsd:element name="UnknownNextActionName" type="wfm:UnknownNextActionName" />
+		
+					
+		<xsd:complexType name="getWorkflowNames">
+			<xsd:sequence />
+		</xsd:complexType>
+		
+		<xsd:complexType name="getWorkflowNamesResponse">
+			<xsd:sequence>
+				<xsd:element name="lastModTime" type="xsd:dateTime" />
+				<xsd:element name="name" type="xsd:token" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+		
+		<xsd:complexType name="getWorkflows">
+			<xsd:sequence>
+				<xsd:element name="wfName" type="xsd:token" nillable="true" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+		
+		<xsd:complexType name="getWorkflowsResponse">
+			<xsd:sequence>
+				<xsd:element name="lastModTime" type="xsd:dateTime" />
+				<xsd:element ref="wf:workflow" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	
+
+		<xsd:element name="getProcesses">
+			<xsd:complexType>
+				<xsd:sequence>
+					<xsd:element name="wfName" type="xsd:token" minOccurs="1" maxOccurs="unbounded" />
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:element>
+		
+		<xsd:element name="getProcessesResponse">
+			<xsd:complexType>
+				<xsd:sequence>
+					<xsd:element name="lastModTime" type="xsd:dateTime" />
+					<xsd:element ref="wf:process" minOccurs="0" maxOccurs="unbounded" />
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:element>
+		
+		
+		<xsd:element name="createNewProcess">
+			<xsd:complexType>
+				<xsd:sequence>
+					<xsd:element name="wfName" type="xsd:token" />
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:element>
+		
+		<xsd:element name="createNewProcessResponse">
+			<xsd:complexType>
+				<xsd:sequence>
+					<xsd:element name="result" type="xsd:boolean" />
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:element>
+		
+		
+		<xsd:element name="getActions">
+			<xsd:complexType>
+				<xsd:sequence>
+					<xsd:element name="psCode" type="xsd:token" />
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:element>
+		
+		<xsd:element name="getActionsResponse">
+			<xsd:complexType>
+				<xsd:sequence>
+					<xsd:element name="returnValues" type="wf:action_status_type" maxOccurs="unbounded" />
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:element>
+
+		<xsd:element name="takeOverAction">
+			<xsd:complexType>
+				<xsd:sequence>
+					<xsd:element name="psCode" type="xsd:token" />
+					<xsd:element ref="wf:actor" />
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:element>
+		
+		<xsd:element name="takeOverActionResponse">
+			<xsd:complexType>
+				<xsd:sequence>
+					<xsd:element name="result" type="xsd:boolean" />
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:element>
+		
+		<xsd:element name="completeAction">
+			<xsd:complexType>
+				<xsd:sequence>
+					<xsd:element name="actionStatusName" type="xsd:token" />
+					<xsd:element name="nextActionName" nillable="true" type="xsd:token" />
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:element>
+		
+		<xsd:element name="completeActionResponse">
+			<xsd:complexType>
+				<xsd:sequence>
+					<xsd:element name="result" type="xsd:boolean" />
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:element>
+		
+		
+		<xsd:complexType name="UnknownNames">
+			<xsd:sequence>
+				<xsd:element name="name" type="wfm:Name" maxOccurs="unbounded" />
+				<xsd:element name="message" type="xsd:string" minOccurs="0" />
+			</xsd:sequence>
+		</xsd:complexType>
+
+		<xsd:complexType name="UnknownCode">
+			<xsd:sequence>
+				<xsd:element name="name" type="wfm:Name" />
+				<xsd:element name="message" type="xsd:string" minOccurs="0" />
+			</xsd:sequence>
+		</xsd:complexType>
+		
+		<xsd:complexType name="UnknownActorName">
+			<xsd:sequence>
+				<xsd:element name="name" type="wfm:Name" />
+				<xsd:element name="message" type="xsd:string" minOccurs="0" />
+			</xsd:sequence>
+		</xsd:complexType>
+		
+		<xsd:complexType name="UnknownActionName">
+			<xsd:sequence>
+				<xsd:element name="name" type="wfm:Name" />
+				<xsd:element name="message" type="xsd:string" minOccurs="0" />
+			</xsd:sequence>
+		</xsd:complexType>
+				
+		<xsd:complexType name="UnknownNextActionName">
+			<xsd:sequence>
+				<xsd:element name="name" type="wfm:Name" />
+				<xsd:element name="message" type="xsd:string" minOccurs="0" />
+			</xsd:sequence>
+		</xsd:complexType>
+		
+			
+			
+		<xsd:simpleType name="Name">
+			<xsd:restriction base="xsd:string">
+				<xsd:pattern value="[a-zA-Z][a-zA-Z0-9]*" />
+			</xsd:restriction>
+		</xsd:simpleType>
+		
+		<xsd:simpleType name="Role">
+			<xsd:restriction base="xsd:string">
+				<xsd:pattern value="[a-zA-Z ]*" />
+			</xsd:restriction>
+		</xsd:simpleType>
+
+	</xsd:schema>
+	</wsdl:types>	
+
+	
+	<wsdl:message name="getWorkflowNames">
+		<wsdl:part name="parameters" element="wfm:getWorkflowNames"/>
+	</wsdl:message>
+	<wsdl:message name="getWorkflowNamesResponse">
+		<wsdl:part name="returnValues" element="wfm:getWorkflowNamesResponse"/>
+	</wsdl:message>
+	<wsdl:message name="getWorkflows">
+		<wsdl:part name="parameters" element="wfm:getWorkflows"/>
+	</wsdl:message>
+	<wsdl:message name="getWorkflowsResponse">
+		<wsdl:part name="returnValues" element="wfm:getWorkflowsResponse"/>
+	</wsdl:message>
+
+	<wsdl:message name="getProcesses">
+		<wsdl:part name="parameters" element="wfm:getProcesses"/>
+	</wsdl:message>
+	<wsdl:message name="getProcessesResponse">
+		<wsdl:part name="returnValues" element="wfm:getProcessesResponse"/>
+	</wsdl:message>
+	<wsdl:message name="createNewProcess">
+		<wsdl:part name="parameters" element="wfm:createNewProcess"/>
+	</wsdl:message>
+	<wsdl:message name="createNewProcessResponse">
+		<wsdl:part name="result" element="wfm:createNewProcessResponse"/>
+	</wsdl:message>
+	
+	<wsdl:message name="getActions">
+		<wsdl:part name="parameters" element="wfm:getActions"/>
+	</wsdl:message>
+	<wsdl:message name="getActionsResponse">
+		<wsdl:part name="returnValues" element="wfm:getActionsResponse"/>
+	</wsdl:message>
+	<wsdl:message name="takeOverAction">
+		<wsdl:part name="parameters" element="wfm:takeOverAction"/>
+	</wsdl:message>
+	<wsdl:message name="takeOverActionResponse">
+		<wsdl:part name="result" element="wfm:takeOverActionResponse"/>
+	</wsdl:message>
+	<wsdl:message name="completeAction">
+		<wsdl:part name="parameters" element="wfm:completeAction"/>
+	</wsdl:message>
+	<wsdl:message name="completeActionResponse">
+		<wsdl:part name="result" element="wfm:completeActionResponse"/>
+	</wsdl:message>
+	
+	<wsdl:message name="UnknownNames">
+		<wsdl:part name="fault" element="wfm:UnknownNames"/>
+	</wsdl:message>
+	<wsdl:message name="UnknownCode">
+		<wsdl:part name="fault" element="wfm:UnknownCode"/>
+	</wsdl:message>
+	<wsdl:message name="UnknownActorName">
+		<wsdl:part name="fault" element="wfm:UnknownActorName"/>
+	</wsdl:message>
+	<wsdl:message name="UnknownActionName">
+		<wsdl:part name="parameters" element="wfm:UnknownActionName"/>
+	</wsdl:message>
+	<wsdl:message name="UnknownNextActionName">
+		<wsdl:part name="parameters" element="wfm:UnknownNextActionName"/>
+	</wsdl:message>
+	
+	
+	<wsdl:portType name="WorkflowInterface">
+		<wsdl:documentation>This interface is related to the feature of the Workflows.</wsdl:documentation>
+		
+		<wsdl:operation name="getWorkflowNames">
+			<wsdl:documentation>
+				Returns the list of names of the Workflows provided by the service.
+			</wsdl:documentation>
+    		<wsdl:input message="wfm:getWorkflowNames"/>
+    		<wsdl:output message="wfm:getWorkflowNamesResponse"/>
+		</wsdl:operation>
+	
+		<wsdl:operation name="getWorkflows">
+			<wsdl:documentation>
+				Returns the details of the Workflows whose names are passed as argument.
+				If the argument is null, the informations about all the workflows are returned.
+				If the name of the workflow is not recognized a fault message will be returned.
+			</wsdl:documentation>
+    		<wsdl:input message="wfm:getWorkflows"/>
+    		<wsdl:output message="wfm:getWorkflowsResponse"/>
+    		<wsdl:fault name="UnknownNames" message="wfm:UnknownNames"/>
+		</wsdl:operation>
+	</wsdl:portType>
+
+	<wsdl:portType name="ProcessInterface">
+		<wsdl:documentation>This interface is related to the feature of the Processes.</wsdl:documentation>
+		
+		<wsdl:operation name="getProcesses">
+			<wsdl:documentation>
+				Returns the details of the Processes related to the name of the Workflows that are passed as argument.
+				If the argument is null, the informations about all the Processes are returned.
+				If the name of the workflow is not recognized a fault message will be returned.
+			</wsdl:documentation>
+			<wsdl:input message="wfm:getProcesses"/>
+			<wsdl:output message="wfm:getProcessesResponse"/>
+            <wsdl:fault name="UnknownNames" message="wfm:UnknownNames"/>
+        </wsdl:operation>
+        
+		<wsdl:operation name="createNewProcess">
+			<wsdl:documentation>
+				This operation creates new processes and it returns it.
+				The new processes are initially created with only the automatically instantiated actions. 
+				New actions may be created later on by means of the other operations.
+				If the name of the workflow is not recognized a fault message will be returned.
+			</wsdl:documentation>
+			<wsdl:input message="wfm:createNewProcess"/>
+			<wsdl:output message="wfm:createNewProcessResponse"/>
+            <wsdl:fault name="UnknownNames" message="wfm:UnknownNames" />
+        </wsdl:operation>
+	</wsdl:portType>
+	
+	<wsdl:portType name="ActionInterface">
+		<wsdl:documentation>This interface is related to the feature of the ActionStatus inside the Processes.</wsdl:documentation>
+		
+		<wsdl:operation name="getActions">
+			<wsdl:documentation>
+				Returns the details of the Actions related to the name of the Processes that are passed as argument.
+				If the code of the process is not recognized a fault message will be returned.
+			</wsdl:documentation>
+			<wsdl:input message="wfm:getActions" />
+			<wsdl:output message="wfm:getActionsResponse" />
+            <wsdl:fault name="UnknownCode" message="wfm:UnknownCode" />
+        </wsdl:operation>
+		
+		<wsdl:operation name="takeOverAction">
+			<wsdl:documentation>
+				This operation allows to an Actor to take charge of an instantiated action.
+				If the code of the process or the name of the actor are not recognized a fault message will be returned.
+			</wsdl:documentation>
+			<wsdl:input message="wfm:takeOverAction"/>
+			<wsdl:output message="wfm:takeOverActionResponse"/>
+            <wsdl:fault name="faultCode" message="wfm:UnknownCode"/>
+            <wsdl:fault name="faultActorName" message="wfm:UnknownActorName"/>
+        </wsdl:operation>
+		
+		<wsdl:operation name="completeAction">
+			<wsdl:documentation>
+				This operation allows the actor who had taken over the action to complete it.
+				If the name of the action or the name of the next action are not recognized a fault message will be returned.
+			</wsdl:documentation>
+			<wsdl:input message="wfm:completeAction"/>
+			<wsdl:output message="wfm:completeActionResponse"/>
+            <wsdl:fault name="faultActName" message="wfm:UnknownActionName"/>
+            <wsdl:fault name="faultNextActName" message="wfm:UnknownNextActionName"/>
+        </wsdl:operation>
+	</wsdl:portType>
+	
+	
+	<wsdl:binding name="WorkflowPortBinding" type="wfm:WorkflowInterface">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		
+		<wsdl:operation name="getWorkflowNames">
+			<soap:operation soapAction="" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		
+		<wsdl:operation name="getWorkflows">
+			<soap:operation soapAction="" />	<!-- "http://lucamannella.altervista.org/WorkflowManager/getWorkflows" !-->
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="UnknownNames">
+				<soap:fault name="UnknownNames" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	
+	<wsdl:binding name="ProcessPortBinding" type="wfm:ProcessInterface">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		
+		<wsdl:operation name="getProcesses">
+			<soap:operation soapAction="" />	<!-- "http://lucamannella.altervista.org/WorkflowManager/getProcesses" !-->
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="UnknownNames">
+				<soap:fault name="UnknownNames" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		
+		<wsdl:operation name="createNewProcess">
+			<soap:operation	soapAction="" />	<!-- http://lucamannella.altervista.org/WorkflowManager/createNewProcess !-->
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="UnknownNames">
+				<soap:fault name="UnknownNames" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+
+	<wsdl:binding name="ActionPortBinding" type="wfm:ActionInterface">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		
+		<wsdl:operation name="getActions">
+			<soap:operation soapAction="" />	<!-- "http://lucamannella.altervista.org/WorkflowManager/getActions" !-->
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="UnknownCode">
+				<soap:fault name="UnknownCode" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+			
+		<wsdl:operation name="takeOverAction">
+			<soap:operation soapAction="" />	<!-- http://lucamannella.altervista.org/WorkflowManager/takeOverAction -->
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="faultCode">
+				<soap:fault name="faultCode" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="faultActorName">
+				<soap:fault name="faultActorName" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		
+		<wsdl:operation name="completeAction">
+			<soap:operation soapAction="" />	<!-- "http://lucamannella.altervista.org/WorkflowManager/completeAction" -->
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="faultActName">
+				<soap:fault name="faultActName" use="literal" />
+			</wsdl:fault>
+			<wsdl:fault name="faultNextActName">
+				<soap:fault name="faultNextActName" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+
+
+	<wsdl:service name="WorkflowService">
+    	<wsdl:port name="WorkflowPort" binding="wfm:WorkflowPortBinding">
+			<soap:address location="http://www.example.org:7070/"/>
+		</wsdl:port>
+    	<wsdl:port name="ProcessPort" binding="wfm:ProcessPortBinding">
+    		<soap:address location="http://www.example.org:7171/" />
+    	</wsdl:port>
+    	<wsdl:port name="ActionPort" binding="wfm:ActionPortBinding">
+    		<soap:address location="http://www.example.org:7272/" />
+    	</wsdl:port>
+	</wsdl:service>
+	
+</wsdl:definitions>
