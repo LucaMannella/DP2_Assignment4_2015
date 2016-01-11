@@ -8,36 +8,30 @@ import it.polito.dp2.WF.lab4.gen.UnknownNames_Exception;
 import it.polito.dp2.WF.lab4.gen.UnknownNextActionName_Exception;
 import it.polito.dp2.WF.lab4.gen.WorkflowControllerInterface;
 
-import javax.xml.ws.WebServiceFeature;
-
-public class WorkflowController extends WebServiceFeature implements
-		WorkflowControllerInterface {
+public class WorkflowController implements WorkflowControllerInterface {
 
 	@Override
-	public boolean createNewProcess(String wfName)
-			throws UnknownNames_Exception {
-		// TODO Auto-generated method stub
+	public boolean createNewProcess(String wfName) throws UnknownNames_Exception {
+		
+		// TODO Implement me
+		
 		return false;
 	}
 
 	@Override
 	public boolean takeOverAction(String psCode, Actor actor)
 			throws UnknownActorName_Exception, UnknownCode_Exception {
-		// TODO Auto-generated method stub
+		
+		// ---	This method is not required by the specifications.	--- //
 		return false;
 	}
 
 	@Override
 	public boolean completeAction(String actionStatusName, String nextActionName)
 			throws UnknownActionName_Exception, UnknownNextActionName_Exception {
-		// TODO Auto-generated method stub
+		
+		// ---	This method is not required by the specifications.	--- //
 		return false;
-	}
-
-	@Override
-	public String getID() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }
