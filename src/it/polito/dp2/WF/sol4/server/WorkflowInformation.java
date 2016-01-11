@@ -1,11 +1,11 @@
 package it.polito.dp2.WF.sol4.server;
 
-import it.polito.dp2.WF.lab4.gen.ActionStatusType;
-import it.polito.dp2.WF.lab4.gen.Process;
-import it.polito.dp2.WF.lab4.gen.UnknownCode_Exception;
-import it.polito.dp2.WF.lab4.gen.UnknownNames_Exception;
-import it.polito.dp2.WF.lab4.gen.Workflow;
-import it.polito.dp2.WF.lab4.gen.WorkflowInfoInterface;
+import it.polito.dp2.WF.sol4.gen.ActionStatusType;
+import it.polito.dp2.WF.sol4.gen.Process;
+import it.polito.dp2.WF.sol4.gen.UnknownCode_Exception;
+import it.polito.dp2.WF.sol4.gen.UnknownNames_Exception;
+import it.polito.dp2.WF.sol4.gen.Workflow;
+import it.polito.dp2.WF.sol4.gen.WorkflowInfoInterface;
 
 import java.util.List;
 
