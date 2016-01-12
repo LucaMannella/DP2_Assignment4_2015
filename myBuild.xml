@@ -1,0 +1,72 @@
+<!--
+	Build file for automating WSDL generation from Java classes
+-->
+
+<project name="TheatreWSDLgen" basedir="." default="generate.wsdl.ass4">
+	
+	<!-- 
+		This is a generic build that uses the following
+	    properties for identifying the proper classes
+	    and names:
+	    	"package" 	  the package where the Java classes are
+        	"class" 	  the main class to be used for generation
+        	"servicename" the name of the service to be generated in the WSDL
+        	"tns" 		  the target namespace to be used in the WSDL
+        you can call the generic generate-wsdl if you set these properties
+        when calling ant.
+	-->
+	<target name="generate.wsdl.ass4" depends="compile.java" description="generate wsdl for assignment 4">
+	    <antcall target="generate.wsdl">
+	       <param name="package" value="it.polito.dp2.WF.sol4.wsdlGeneration"/>
+	       <param name="class" value="ConcreteWorkflowService"/>
+	       <param name="servicename" value="WorkflowService"/>
+	       <param name="tns" value="http://lucamannella.altervista.org/WorkflowManager"/>
+	    </antcall>
+	</target>
+	
+    <property name="wsdl.dir" value="${basedir}/generated/wsdl"/>
+	<property name="build.dir" value="${basedir}/build"/>
+	<property name="src.dir" value="${basedir}/src"/>
+	<property name="gen.src.dir" value="${basedir}/generated/gen-src"/>
+	<property name="libDir" location="${basedir}/lib" />
+	
+	<!-- Init !-->
+	<target name="init">
+		<echo> Creating folders... </echo>
+		<mkdir dir="${gen.src.dir}"/>
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${wsdl.dir}"/>
+	</target>
+
+	<!-- Clean !-->
+	<target name="clean">
+		<echo> Deleting folders... </echo>
+	    <delete dir="${build.dir}"/>
+		<delete dir="${gen.src.dir}"/>
+		<delete dir="${wsdl.dir}"/>
+	</target>
+
+	<!-- Generate Artifacts and WSDL !-->
+    <target name="generate.wsdl" depends="compile.java">
+        <exec executable="wsgen">
+            <arg line="-cp ${build.dir} ${package}.${class} -d ${build.dir} -s ${gen.src.dir} -wsdl -r ${wsdl.dir} -servicename {${tns}}${servicename}"/>
+        </exec>
+    </target>
+	
+    <target name="compile.java" depends="init">
+        <javac debug="on" fork="true" destdir="${build.dir}" srcdir="${src.dir}"/>
+    	<src path="${src.dir}"/>
+		<src path="${gen.src.dir}"/>
+		<include name="it/polito/dp2/WF/lab4/**" />
+		<include name="it/polito/dp2/WF/lab4/*.java" />
+    	<classpath>
+			<path refid="sol.classpath" />
+		</classpath>
+    </target>
+	
+	<!-- The classpath to be used for compilation of the solution -->
+	<path id="sol.classpath">
+		<pathelement location="${libDir}/WF.jar"/>
+	</path>
+	
+</project>
