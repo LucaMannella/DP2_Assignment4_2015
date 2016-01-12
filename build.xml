@@ -109,7 +109,7 @@
 		</java>
 	</target>
 
-	<target name="build-server" depends="init">
+	<target name="build-server" depends="init" description="call the user build-server implementation">
 		<ant antfile="${sol.build.filepath}" target="build-server">
 			<property name="basedir" value="${lab4.location}" />
 		</ant>
