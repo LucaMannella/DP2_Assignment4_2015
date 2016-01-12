@@ -14,43 +14,44 @@
 	<xsd:schema version="1.0" targetNamespace="http://lucamannella.altervista.org/WorkflowManager/"
 		xmlns:wf="http://lucamannella.altervista.org/WFInfo" >
 		<xsd:import namespace="http://lucamannella.altervista.org/WFInfo" schemaLocation="WFInfo.xsd"/>
-
-		<xsd:element name="getWorkflowNames" type="wfm:getWorkflowNames" />
-		<xsd:element name="getWorkflowNamesResponse" type="wfm:getWorkflowNamesResponse" />
-		<xsd:element name="getWorkflows" type="wfm:getWorkflows" />
-		<xsd:element name="getWorkflowsResponse" type="wfm:getWorkflowsResponse" />
 		
 		<xsd:element name="UnknownNames" type="wfm:UnknownNames" />
 		<xsd:element name="UnknownCode" type="wfm:UnknownCode" />
 		<xsd:element name="UnknownActorName" type="wfm:UnknownActorName" />
 		<xsd:element name="UnknownActionName" type="wfm:UnknownActionName" />
 		<xsd:element name="UnknownNextActionName" type="wfm:UnknownNextActionName" />
-		
 					
-		<xsd:complexType name="getWorkflowNames">
-			<xsd:sequence />
-		</xsd:complexType>
+		<xsd:element name="getWorkflowNames">
+			<xsd:complexType>
+				<xsd:sequence />
+			</xsd:complexType>
+		</xsd:element>		
 		
-		<xsd:complexType name="getWorkflowNamesResponse">
-			<xsd:sequence>
-				<xsd:element name="lastModTime" type="xsd:dateTime" />
-				<xsd:element name="name" type="xsd:token" minOccurs="0" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
+		<xsd:element name="getWorkflowNamesResponse">
+			<xsd:complexType>
+				<xsd:sequence>
+					<xsd:element name="lastModTime" type="xsd:dateTime" />
+					<xsd:element name="name" type="xsd:token" minOccurs="0" maxOccurs="unbounded" />
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:element>
 		
-		<xsd:complexType name="getWorkflows">
-			<xsd:sequence>
-				<xsd:element name="wfName" type="xsd:token" nillable="true" minOccurs="0" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
+		<xsd:element name="getWorkflows">
+			<xsd:complexType>
+				<xsd:sequence>
+					<xsd:element name="wfName" type="xsd:token" nillable="true" minOccurs="0" maxOccurs="unbounded" />
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:element>
 		
-		<xsd:complexType name="getWorkflowsResponse">
-			<xsd:sequence>
-				<xsd:element name="lastModTime" type="xsd:dateTime" />
-				<xsd:element ref="wf:workflow" minOccurs="0" maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	
+		<xsd:element name="getWorkflowsResponse">
+			<xsd:complexType>
+				<xsd:sequence>
+					<xsd:element name="lastModTime" type="xsd:dateTime" />
+					<xsd:element ref="wf:workflow" minOccurs="0" maxOccurs="unbounded" />
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:element>
 
 		<xsd:element name="getProcesses">
 			<xsd:complexType>
