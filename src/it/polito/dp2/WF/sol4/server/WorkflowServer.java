@@ -33,14 +33,24 @@ public class WorkflowServer {
 			System.exit(-11);
 		}
 		
-		Endpoint wfControl = Endpoint.create(new WorkflowController());
-		wfControl.setExecutor(Executors.newFixedThreadPool(MAX_THREADS));
-		wfControl.publish(wfControlURL);
+		WorkflowDataManager dataManager = new WorkflowDataManager(wfMonitor);
 		
-		Endpoint wfInfo = Endpoint.create(new WorkflowInformation());
-		wfInfo.setExecutor(Executors.newFixedThreadPool(MAX_THREADS));
-		wfInfo.publish(wfInfoURL);
-		
+		try {
+			Endpoint wfControl = Endpoint.create(new WorkflowController(dataManager));
+			wfControl.setExecutor(Executors.newFixedThreadPool(MAX_THREADS));
+			wfControl.publish(wfControlURL);
+			System.out.println("The service was published at: "+wfControlURL);
+			
+			Endpoint wfInfo = Endpoint.create(new WorkflowInformation(dataManager));
+			wfInfo.setExecutor(Executors.newFixedThreadPool(MAX_THREADS));
+			wfInfo.publish(wfInfoURL);
+			System.out.println("The service was published at: "+wfInfoURL);
+		}
+		catch(SecurityException | IllegalStateException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			System.exit(-1);
+		}
 	}
 
 }
