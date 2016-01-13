@@ -23,6 +23,10 @@ import it.polito.dp2.WF.sol4.gen.WorkflowControllerInterface;
 			endpointInterface = "it.polito.dp2.WF.sol4.gen.WorkflowControllerInterface")
 @XmlSeeAlso({ObjectFactory.class})
 public class WorkflowController implements WorkflowControllerInterface {
+	
+	public WorkflowController(WorkflowDataManager wfManager) {
+		// TODO Auto-generated constructor stub
+	}
 
 	@WebMethod
     @WebResult(name = "result", targetNamespace = "")
