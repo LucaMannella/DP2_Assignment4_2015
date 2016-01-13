@@ -15,6 +15,7 @@ zip/
 # eclipse files #
 .classpath
 .project
+.settings/
 
 # intelliJ files #
 DP2_Assignment4.iml

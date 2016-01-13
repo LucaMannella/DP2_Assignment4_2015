@@ -27,8 +27,10 @@ import javax.xml.ws.ResponseWrapper;
 @XmlSeeAlso({ObjectFactory.class})
 public class WorkflowInformation implements WorkflowInfoInterface {
 	
-	public WorkflowInformation(WorkflowDataManager wfManager) {
-		// TODO Auto-generated constructor stub
+	private WorkflowDataManager dataManager;
+
+	public WorkflowInformation(WorkflowDataManager wfManager) {	// TODO Auto-generated constructor stub
+		this.dataManager = wfManager;
 	}
 
 	@WebMethod
@@ -36,9 +38,8 @@ public class WorkflowInformation implements WorkflowInfoInterface {
     @ResponseWrapper(localName = "getWorkflowNamesResponse", targetNamespace = "http://lucamannella.altervista.org/WorkflowManager/", className = "it.polito.dp2.WF.sol4.gen.GetWorkflowNamesResponse")
 	@Override
 	public void getWorkflowNames(Holder<XMLGregorianCalendar> lastModTime, Holder<List<String>> name) {
-		
-		// TODO Implement me
-
+		name.value = dataManager.getWorkflowNames();
+		lastModTime.value  = dataManager.getLastWorkflowsUpdate();
 	}
 
 	@WebMethod
