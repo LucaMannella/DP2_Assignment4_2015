@@ -148,28 +148,24 @@
 
 		<xsd:complexType name="UnknownCode">
 			<xsd:sequence>
-				<xsd:element name="name" type="wfm:Name" />
 				<xsd:element name="message" type="xsd:string" minOccurs="0" />
 			</xsd:sequence>
 		</xsd:complexType>
 		
 		<xsd:complexType name="UnknownActorName">
 			<xsd:sequence>
-				<xsd:element name="name" type="wfm:Name" />
 				<xsd:element name="message" type="xsd:string" minOccurs="0" />
 			</xsd:sequence>
 		</xsd:complexType>
 		
 		<xsd:complexType name="UnknownActionName">
 			<xsd:sequence>
-				<xsd:element name="name" type="wfm:Name" />
 				<xsd:element name="message" type="xsd:string" minOccurs="0" />
 			</xsd:sequence>
 		</xsd:complexType>
 				
 		<xsd:complexType name="UnknownNextActionName">
 			<xsd:sequence>
-				<xsd:element name="name" type="wfm:Name" />
 				<xsd:element name="message" type="xsd:string" minOccurs="0" />
 			</xsd:sequence>
 		</xsd:complexType>
@@ -331,8 +327,8 @@
 			</wsdl:documentation>
 			<wsdl:input message="wfm:completeAction"/>
 			<wsdl:output message="wfm:completeActionResponse"/>
-            <wsdl:fault name="faultActName" message="wfm:UnknownActionName"/>
-            <wsdl:fault name="faultNextActName" message="wfm:UnknownNextActionName"/>
+            <wsdl:fault name="faultActionName" message="wfm:UnknownActionName"/>
+            <wsdl:fault name="faultNextActionName" message="wfm:UnknownNextActionName"/>
         </wsdl:operation>
 	</wsdl:portType>
 	
@@ -432,11 +428,11 @@
 			<wsdl:output>
 				<soap:body use="literal" />
 			</wsdl:output>
-			<wsdl:fault name="faultActName">
-				<soap:fault name="faultActName" use="literal" />
+			<wsdl:fault name="faultActionName">
+				<soap:fault name="faultActionName" use="literal" />
 			</wsdl:fault>
-			<wsdl:fault name="faultNextActName">
-				<soap:fault name="faultNextActName" use="literal" />
+			<wsdl:fault name="faultNextActionName">
+				<soap:fault name="faultNextActionName" use="literal" />
 			</wsdl:fault>
 		</wsdl:operation>
 	</wsdl:binding>
