@@ -1,28 +1,9 @@
 package it.polito.dp2.WF.sol4.server;
 
-import it.polito.dp2.WF.ActionReader;
-import it.polito.dp2.WF.ActionStatusReader;
-import it.polito.dp2.WF.ProcessActionReader;
-import it.polito.dp2.WF.ProcessReader;
-import it.polito.dp2.WF.SimpleActionReader;
-import it.polito.dp2.WF.WorkflowMonitor;
-import it.polito.dp2.WF.WorkflowReader;
-import it.polito.dp2.WF.sol2.util.Utility;
-import it.polito.dp2.WF.sol4.gen.ActionType;
-import it.polito.dp2.WF.sol4.gen.ActionType.SimpleAction;
-import it.polito.dp2.WF.sol4.gen.ObjectFactory;
-import it.polito.dp2.WF.sol4.gen.Process;
-import it.polito.dp2.WF.sol4.gen.UnknownNames_Exception;
-import it.polito.dp2.WF.sol4.gen.Workflow;
-
-import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
@@ -30,6 +11,22 @@ import java.util.logging.Logger;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+
+import it.polito.dp2.WF.ActionReader;
+import it.polito.dp2.WF.ActionStatusReader;
+import it.polito.dp2.WF.ProcessActionReader;
+import it.polito.dp2.WF.ProcessReader;
+import it.polito.dp2.WF.SimpleActionReader;
+import it.polito.dp2.WF.WorkflowMonitor;
+import it.polito.dp2.WF.WorkflowReader;
+import it.polito.dp2.WF.sol4.gen.ActionStatusType;
+import it.polito.dp2.WF.sol4.gen.ActionType;
+import it.polito.dp2.WF.sol4.gen.ActionType.SimpleAction;
+import it.polito.dp2.WF.sol4.gen.ObjectFactory;
+import it.polito.dp2.WF.sol4.gen.Process;
+import it.polito.dp2.WF.sol4.gen.UnknownNames_Exception;
+import it.polito.dp2.WF.sol4.gen.Workflow;
+import it.polito.dp2.WF.sol4.util.Utility;
 
 /**
  * This class must be thread safe!
@@ -125,7 +122,7 @@ public class WorkflowDataManager {
 		Map<String, ActionType> newActions = new ConcurrentHashMap<String, ActionType>();
 		// - building all the actions - //
 		for( ActionReader ar : wfr.getActions() ) {
-			ActionType newAct = buildActionType(wfName, ar, newActions);
+			ActionType newAct = buildAction(wfName, ar, newActions);
 			newActions.put(newAct.getName(), newAct);
 		}
 		// - linking all the actions - //
@@ -152,7 +149,7 @@ public class WorkflowDataManager {
 	 * @param createdActions
 	 * @return
 	 */
-	private ActionType buildActionType(String wfName, ActionReader ar, Map<String, ActionType> createdActions) {
+	private ActionType buildAction(String wfName, ActionReader ar, Map<String, ActionType> createdActions) {
 		String actName = ar.getName();
 		String id = wfName+"_"+actName;
 		
@@ -242,49 +239,57 @@ public class WorkflowDataManager {
 		process.setCode("p"+pCode);
 		process.setStarted(startTime);
 		process.setWorkflow(wfName);
-		//TODO: here
-		Workflow wf = workflowsMap.get(wfName);
-		Map<String, ActionType> wfActionsTypeMap = Utility.buildWFActionsMap(wf.getAction());
 		
-		List<Process.ActionStatus> newActions = new LinkedList<Process.ActionStatus>();
+		// - preparing data for the creation of the actions - //
+		Workflow wf = workflowMap.get(wfName);
+		Map<String, ActionType> wfActionsTypeMap = Utility.buildWFActionsMap(wf.getAction());
+		List<ActionStatusType> newActions = new LinkedList<ActionStatusType>();
+		
 		// - For each process taking the inner actions - //
-		for ( ActionStatusReader asr : pr.getStatus() ) {
-			Process.ActionStatus action = objFactory.createProcessActionStatus();
-			
-			action.setAction( wfActionsTypeMap.get(asr.getActionName()) );	//TODO: to check!
-			action.setTakenInCharge(asr.isTakenInCharge());
-			action.setTerminated(asr.isTerminated());
-			
-			if (asr.isTakenInCharge()) {		//was the action assigned?
-				String actor = asr.getActor().getName();
-				action.setActor(actor);
-			}
-
-			if (asr.isTerminated())	{		//was the action completed?
-				// - Generating a new XMLGregorianCalendar - //
-				cal = new GregorianCalendar();
-				cal.setTime(asr.getTerminationTime().getTime());
-				XMLGregorianCalendar endTime = null;
-				try {
-					endTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
-				} catch (DatatypeConfigurationException e) {
-					System.err.println("Error! There is a problem with the instantiation of the DatatypeFactory");
-					System.err.println(e.getMessage());
-					e.printStackTrace();
-					//endTime = new XMLGregorianCalendarImpl(cal);
-				}
-				
-				action.setTimestamp(endTime);
-			}
-			newActions.add(action);
+		for ( ActionStatusReader asr : psr.getStatus() ) {
+			ActionType actType = wfActionsTypeMap.get(asr.getActionName());
+			ActionStatusType as = buildActionStatus(asr, actType);
+			newActions.add(as);
 		}
 		
 		if( !newActions.isEmpty() )
 			process.getActionStatus().addAll(newActions);
 		else
-			System.out.println("\nDEBUG [WFInfoSerializer - createProcesses()]: The process p"+code+" does not have actions!\n");
+			System.out.println("\nDEBUG [WFInfoSerializer - createProcesses()]: The process "+process.getCode()+" does not have actions!\n");
 		
 		return process;
+	}
+
+	private ActionStatusType buildActionStatus(ActionStatusReader asr, ActionType actType) {
+		ActionStatusType action = objFactory.createActionStatusType();
+		
+		action.setAction(actType);
+		action.setTakenInCharge(asr.isTakenInCharge());
+		action.setTerminated(asr.isTerminated());
+		
+		if (asr.isTakenInCharge()) {		//was the action assigned?
+			String actor = asr.getActor().getName();
+			action.setActor(actor);
+		}
+
+		if (asr.isTerminated())	{		//was the action completed?
+			// - Generating a new XMLGregorianCalendar - //
+			GregorianCalendar cal = new GregorianCalendar();
+			cal.setTime(asr.getTerminationTime().getTime());
+			XMLGregorianCalendar endTime = null;
+			try {
+				endTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
+			} catch (DatatypeConfigurationException e) {
+				System.err.println("Error! There is a problem with the instantiation of the DatatypeFactory");
+				System.err.println(e.getMessage());
+				e.printStackTrace();
+				//endTime = new XMLGregorianCalendarImpl(cal);
+			}
+			
+			action.setTimestamp(endTime);
+		}
+		
+		return action;
 	}
 
 }
