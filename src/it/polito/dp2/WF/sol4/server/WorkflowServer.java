@@ -33,15 +33,15 @@ public class WorkflowServer {
 			System.exit(-11);
 		}
 		
-		WorkflowDataManager dataManager = new WorkflowDataManager(wfMonitor);
+		WorkflowDataManager manager = new WorkflowDataManager(wfMonitor);
 		
 		try {
-			Endpoint wfControl = Endpoint.create(new WorkflowController(dataManager));
+			Endpoint wfControl = Endpoint.create(new WorkflowController(manager));
 			wfControl.setExecutor(Executors.newFixedThreadPool(MAX_THREADS));
 			wfControl.publish(wfControlURL);
 			System.out.println("The service was published at: "+wfControlURL);
 			
-			Endpoint wfInfo = Endpoint.create(new WorkflowInformation(dataManager));
+			Endpoint wfInfo = Endpoint.create(new WorkflowInformation(manager));
 			wfInfo.setExecutor(Executors.newFixedThreadPool(MAX_THREADS));
 			wfInfo.publish(wfInfoURL);
 			System.out.println("The service was published at: "+wfInfoURL);
