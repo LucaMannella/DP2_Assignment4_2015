@@ -104,7 +104,7 @@
 				<element name="action_status" type="wf:action_status_type" minOccurs="1" maxOccurs="unbounded"/>
 			</sequence>
 			
-			<attribute name="code" type="token" />
+			<attribute name="code" type="wf:ProcessCode" />
 			<attribute name="started" type="dateTime" use="required" /> 
 			<attribute name="workflow" type="token" use="required" />
 		</complexType>
@@ -135,5 +135,11 @@
 			<attribute name="role" type="token" use="required" />
 		</complexType>
 	</element>
+	
+	<simpleType name="ProcessCode">
+		<restriction base="token">
+			<pattern value="p[0-9]+" />
+		</restriction>
+	</simpleType>
 	
 </schema>
