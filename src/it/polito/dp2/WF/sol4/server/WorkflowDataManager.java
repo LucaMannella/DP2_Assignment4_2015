@@ -1,17 +1,25 @@
 package it.polito.dp2.WF.sol4.server;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.QName;
+
+import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 
 import it.polito.dp2.WF.ActionReader;
 import it.polito.dp2.WF.ActionStatusReader;
@@ -22,11 +30,13 @@ import it.polito.dp2.WF.WorkflowMonitor;
 import it.polito.dp2.WF.WorkflowReader;
 import it.polito.dp2.WF.sol4.gen.ActionStatusType;
 import it.polito.dp2.WF.sol4.gen.ActionType;
+import it.polito.dp2.WF.sol4.gen.ErrorMessage;
 import it.polito.dp2.WF.sol4.gen.ActionType.SimpleAction;
 import it.polito.dp2.WF.sol4.gen.ObjectFactory;
 import it.polito.dp2.WF.sol4.gen.Process;
 import it.polito.dp2.WF.sol4.gen.UnknownNames;
 import it.polito.dp2.WF.sol4.gen.UnknownNames_Exception;
+import it.polito.dp2.WF.sol4.gen.UnknownWorkflow;
 import it.polito.dp2.WF.sol4.gen.Workflow;
 import it.polito.dp2.WF.sol4.util.Utility;
 
@@ -49,6 +59,30 @@ public class WorkflowDataManager {
 	private GregorianCalendar lastProcessUpdate;
 
 	private ObjectFactory objFactory;
+
+	
+	public String createNewProcess(String wfName) throws UnknownWorkflow {
+		Workflow wf = workflowMap.get(wfName);
+		if(wf == null) {
+			String message = "Impossible to create a new process! The specified workflow \""+wfName+"\" does not exists!";
+			
+			ErrorMessage faultInfo = objFactory.createErrorMessage();
+			faultInfo.setMessage(message);
+			throw new UnknownWorkflow(message, faultInfo);
+		}
+		
+		Process newProcess = objFactory.createProcess();
+		newProcess.setStarted(new XMLGregorianCalendarImpl());
+		newProcess.setWorkflow(wfName);
+		//newProcess.getActionStatus()
+		//TODO: implement me!
+		synchronized (this) {
+			newProcess.setCode("p"+pCode);
+			pCode++;
+		}
+		
+		return "p"+pCode;
+	}
 
 	/**
 	 * This method returns a {@link List} containg all the name of the workflows that are inside the manager.
@@ -159,6 +193,11 @@ public class WorkflowDataManager {
 		return workflowMap.get(wfName);
 	}
 	
+	public boolean completeAction(String actionStatusName, String nextActionName) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 	/**
 	 * Construct a WorkflowDataManager starting from a {@link WorkflowMonitor} class.
 	 * @param wfMonitor - a {@link WorkflowMonitor}

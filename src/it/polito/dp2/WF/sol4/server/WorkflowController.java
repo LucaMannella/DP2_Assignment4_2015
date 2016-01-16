@@ -8,14 +8,12 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 
 import it.polito.dp2.WF.sol4.gen.Actor;
 import it.polito.dp2.WF.sol4.gen.ObjectFactory;
-import it.polito.dp2.WF.sol4.gen.UnknownActionName_Exception;
-import it.polito.dp2.WF.sol4.gen.UnknownActorName_Exception;
-import it.polito.dp2.WF.sol4.gen.UnknownCode_Exception;
-import it.polito.dp2.WF.sol4.gen.UnknownNames_Exception;
-import it.polito.dp2.WF.sol4.gen.UnknownNextActionName_Exception;
-import it.polito.dp2.WF.sol4.gen.Workflow;
+import it.polito.dp2.WF.sol4.gen.UnknownActionName;
+import it.polito.dp2.WF.sol4.gen.UnknownActorName;
+import it.polito.dp2.WF.sol4.gen.UnknownCode;
+import it.polito.dp2.WF.sol4.gen.UnknownNextActionName;
+import it.polito.dp2.WF.sol4.gen.UnknownWorkflow;
 import it.polito.dp2.WF.sol4.gen.WorkflowControllerInterface;
-import it.polito.dp2.WF.sol4.gen.Process;
 
 @WebService(name = "WorkflowControllerInterface", 
 			targetNamespace = "http://lucamannella.altervista.org/WorkflowManager/",
@@ -30,30 +28,26 @@ public class WorkflowController implements WorkflowControllerInterface {
 	
 	private static Logger log = Logger.getLogger(WorkflowController.class.getName());
 	
-	public WorkflowController(WorkflowDataManager wfManager) {		//TODO Auto-generated constructor stub
-		
+	public WorkflowController(WorkflowDataManager wfManager) {		
 		this.manager = wfManager;
 		this.objFactory = new ObjectFactory();
 	}
 
 	@WebMethod
 	@Override
-	public boolean createNewProcess(String wfName) throws UnknownNames_Exception {
+	public String createNewProcess (String wfName) throws UnknownWorkflow{		//TODO: Implement me
 		log.entering(log.getName(), "createNewProcess");
 		
-		//TODO: Implement me.
-		Workflow wf = manager.getWorkflow(wfName);
-		Process ps = objFactory.createProcess();
-		
+		String psCode = manager.createNewProcess(wfName);
 		
 		log.exiting(log.getName(), "createNewProcess");
-		return false;
+		return psCode;
 	}
 
 	@WebMethod
 	@Override
 	public boolean takeOverAction(String psCode, Actor actor)
-			throws UnknownActorName_Exception, UnknownCode_Exception {
+			throws UnknownActorName, UnknownCode {
 		log.entering(log.getName(), "takeOverAction");
 		
 		// ---	This method is not required by the specifications.	--- //
@@ -65,13 +59,14 @@ public class WorkflowController implements WorkflowControllerInterface {
 	@WebMethod
 	@Override
 	public boolean completeAction(String actionStatusName, String nextActionName)
-			throws UnknownActionName_Exception, UnknownNextActionName_Exception {
+			throws UnknownActionName, UnknownNextActionName {
 		log.entering(log.getName(), "completeAction");
 		
 		// ---	This method is not required by the specifications.	--- //
+		boolean toRet = manager.completeAction(actionStatusName, nextActionName);
 		
 		log.exiting(log.getName(), "completeAction");
-		return false;
+		return toRet;
 	}
 
 }
