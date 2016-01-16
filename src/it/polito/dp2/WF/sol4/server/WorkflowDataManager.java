@@ -1,5 +1,6 @@
 package it.polito.dp2.WF.sol4.server;
 
+import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,6 +25,7 @@ import it.polito.dp2.WF.sol4.gen.ActionType;
 import it.polito.dp2.WF.sol4.gen.ActionType.SimpleAction;
 import it.polito.dp2.WF.sol4.gen.ObjectFactory;
 import it.polito.dp2.WF.sol4.gen.Process;
+import it.polito.dp2.WF.sol4.gen.UnknownNames;
 import it.polito.dp2.WF.sol4.gen.UnknownNames_Exception;
 import it.polito.dp2.WF.sol4.gen.Workflow;
 import it.polito.dp2.WF.sol4.util.Utility;
@@ -48,7 +50,87 @@ public class WorkflowDataManager {
 
 	private ObjectFactory objFactory;
 
-	public WorkflowDataManager(WorkflowMonitor wfMonitor) {	// TODO Auto-generated constructor stub
+	public List<String> getWorkflowNames() {
+		return this.workflowNames;
+	}
+
+	public GregorianCalendar getLastWorkflowsUpdate() {		// TODO Auto-generated method stub
+		return this.lastWorkflowUpdate;
+	}
+
+	public List<Workflow> getWorkflows(List<String> wfNames) throws UnknownNames_Exception {
+		//TODO: Check me!
+		List<String> wrongNames = new LinkedList<String>();
+		List<Workflow> workflows = new LinkedList<Workflow>();
+		
+		for(String name : wfNames) {
+			Workflow wf = workflowMap.get(name);
+			if(wf == null)
+				wrongNames.add(name);
+			else
+				workflows.add(wf);
+		}
+		
+		if(wrongNames.isEmpty()) {
+			return workflows;
+		}
+		else {
+			String errorMessage = "Error! Some names given as parameter are wrong or do not exist!";
+			
+			UnknownNames faultInfo = objFactory.createUnknownNames();
+			faultInfo.setMessage(errorMessage);
+			faultInfo.getName().addAll(wrongNames);
+			
+			throw new UnknownNames_Exception(errorMessage, faultInfo);
+		}
+	}
+
+	public GregorianCalendar getLastProcessesUpdate() {
+		return this.lastProcessUpdate;
+	}
+
+	public List<Process> getProcesses(List<String> wfNames) throws UnknownNames_Exception {
+		//TODO: Check me!
+		List<String> wrongNames = new LinkedList<String>();
+		
+		List<Process> processes = new LinkedList<Process>();
+		Collection<Process> processesCollection = processMap.values();
+		
+		for(String name : wfNames) {
+			if(workflowMap.containsKey(name) == false)
+				wrongNames.add(name);
+		}
+		if(wrongNames.isEmpty() == false) {
+			String errorMessage = "Error! Some names given as parameter are wrong or do not exist!";
+			
+			UnknownNames faultInfo = objFactory.createUnknownNames();
+			faultInfo.setMessage(errorMessage);
+			faultInfo.getName().addAll(wrongNames);
+			
+			throw new UnknownNames_Exception(errorMessage, faultInfo);
+		}
+		
+		for(String name : wfNames) {
+			for(Process p : processesCollection) {
+		// looking for a matching between the list of name and the workflow of the process
+				if( p.getWorkflow().equals(name) )
+					processes.add(p);
+			}
+		}	
+			
+		return processes;
+	}
+
+	public Process getProcess(String psCode) {
+		return processMap.get(psCode);
+	}
+
+	public Workflow getWorkflow(String wfName) {
+		return workflowMap.get(wfName);
+	}
+
+	public WorkflowDataManager(WorkflowMonitor wfMonitor) {
+		log.entering(log.getName(), "Constructor");
 		objFactory = new ObjectFactory();
 		
 		workflowMap = new ConcurrentHashMap<String, Workflow>();
@@ -72,39 +154,7 @@ public class WorkflowDataManager {
 		}
 		lastProcessUpdate = new GregorianCalendar();
 		
-		objFactory = null;
-	}
-
-	public List<String> getWorkflowNames() {		// TODO Auto-generated method stub
-		return this.workflowNames;
-	}
-
-	public GregorianCalendar getLastWorkflowsUpdate() {		// TODO Auto-generated method stub
-		return this.lastWorkflowUpdate;
-	}
-
-	public List<Workflow> getWorkflows(List<String> wfNames) throws UnknownNames_Exception{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public GregorianCalendar getLastProcessesUpdate() {
-		return this.lastProcessUpdate;
-	}
-
-	public List<Process> getProcesses(List<String> wfNames) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Process getProcess(String psCode) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Workflow getWorkflow(String wfName) {
-		// TODO Auto-generated method stub
-		return null;
+		log.exiting(log.getName(), "Constructor");
 	}
 
 	/**
@@ -199,7 +249,6 @@ public class WorkflowDataManager {
 				simpleAction.getNextActions().add(azioneSuccessiva);
 			else
 				System.err.println("Error! Situazione inaspettata! Non esiste l'azione: "+possibleAction.getName());
-				
 		}
 		
 		// - Setting simpleAction & processAction inside the element - //
@@ -260,6 +309,13 @@ public class WorkflowDataManager {
 		return process;
 	}
 
+	/**
+	 * This method is used by buildProcess (that is called by the constructor)
+	 * to create a {@link ActionStatusType} starting from a {@link ActionStatusReader} interface.
+	 * @param asr
+	 * @param actType
+	 * @return
+	 */
 	private ActionStatusType buildActionStatus(ActionStatusReader asr, ActionType actType) {
 		ActionStatusType action = objFactory.createActionStatusType();
 		
