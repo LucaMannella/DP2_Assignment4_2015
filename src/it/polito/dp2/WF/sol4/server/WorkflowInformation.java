@@ -1,6 +1,5 @@
 package it.polito.dp2.WF.sol4.server;
 
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.Logger;
@@ -28,6 +27,7 @@ import it.polito.dp2.WF.sol4.gen.WorkflowInfoInterface;
 			portName = "WorkflowInfoPort",
 			endpointInterface = "it.polito.dp2.WF.sol4.gen.WorkflowInfoInterface")
 @XmlSeeAlso({ObjectFactory.class})
+//@HandlerChain(file = "META-INF/handler-chain.xml")
 public class WorkflowInformation implements WorkflowInfoInterface {
 	
 	private WorkflowDataManager manager;
@@ -58,13 +58,12 @@ public class WorkflowInformation implements WorkflowInfoInterface {
 		log.exiting(log.getName(), "getWorkflowNames", lastModTime.value.toString());
 	}
 
+	
 	@WebMethod
 	@Override
 	public void getWorkflows(List<String> wfNames, Holder<XMLGregorianCalendar> lastModTime, Holder<List<Workflow>> workflows) 
 			throws UnknownNames_Exception {		//TODO: Check me
 		log.entering(log.getName(), "getWorkflows", wfNames.toString());
-		
-		workflows.value = manager.getWorkflows(wfNames);
 		
 		GregorianCalendar cal = manager.getLastWorkflowsUpdate();
 		try {
@@ -76,6 +75,8 @@ public class WorkflowInformation implements WorkflowInfoInterface {
 			//startTime = new XMLGregorianCalendarImpl(cal);
 		}
 		
+		workflows.value = manager.getWorkflows(wfNames);
+		
 		log.exiting(log.getName(), "getWorkflows", lastModTime.value.toString());
 	}
 
@@ -84,8 +85,6 @@ public class WorkflowInformation implements WorkflowInfoInterface {
 	public void getProcesses(List<String> wfNames, Holder<XMLGregorianCalendar> lastModTime, Holder<List<Process>> processes) 
 			throws UnknownNames_Exception {		//TODO: Check me
 		log.entering(log.getName(), "getProcesses", wfNames.toString());
-		
-		processes.value = manager.getProcesses(wfNames);
 		
 		GregorianCalendar cal = manager.getLastProcessesUpdate();
 		try {
@@ -96,6 +95,8 @@ public class WorkflowInformation implements WorkflowInfoInterface {
 			e.printStackTrace();
 			//startTime = new XMLGregorianCalendarImpl(cal);
 		}
+		
+		processes.value = manager.getProcesses(wfNames);
 		
 		log.exiting(log.getName(), "getProcesses", lastModTime.value.toString());
 	}
