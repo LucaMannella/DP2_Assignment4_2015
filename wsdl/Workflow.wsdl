@@ -16,10 +16,11 @@
 		<xsd:import namespace="http://lucamannella.altervista.org/WFInfo" schemaLocation="WFInfo.xsd"/>
 		
 		<xsd:element name="UnknownNames" type="wfm:UnknownNames" />
-		<xsd:element name="UnknownCode" type="wfm:UnknownCode" />
-		<xsd:element name="UnknownActorName" type="wfm:UnknownActorName" />
-		<xsd:element name="UnknownActionName" type="wfm:UnknownActionName" />
-		<xsd:element name="UnknownNextActionName" type="wfm:UnknownNextActionName" />
+		<xsd:element name="UnknownCode" type="wfm:ErrorMessage" />
+		<xsd:element name="UnknownWorkflow" type="wfm:ErrorMessage"/>
+		<xsd:element name="UnknownActorName" type="wfm:ErrorMessage" />
+		<xsd:element name="UnknownActionName" type="wfm:ErrorMessage" />
+		<xsd:element name="UnknownNextActionName" type="wfm:ErrorMessage" />
 					
 		<xsd:element name="getWorkflowNames">
 			<xsd:complexType>
@@ -146,30 +147,11 @@
 			</xsd:sequence>
 		</xsd:complexType>
 
-		<xsd:complexType name="UnknownCode">
+		<xsd:complexType name="ErrorMessage">
 			<xsd:sequence>
 				<xsd:element name="message" type="xsd:string" minOccurs="0" />
 			</xsd:sequence>
 		</xsd:complexType>
-		
-		<xsd:complexType name="UnknownActorName">
-			<xsd:sequence>
-				<xsd:element name="message" type="xsd:string" minOccurs="0" />
-			</xsd:sequence>
-		</xsd:complexType>
-		
-		<xsd:complexType name="UnknownActionName">
-			<xsd:sequence>
-				<xsd:element name="message" type="xsd:string" minOccurs="0" />
-			</xsd:sequence>
-		</xsd:complexType>
-				
-		<xsd:complexType name="UnknownNextActionName">
-			<xsd:sequence>
-				<xsd:element name="message" type="xsd:string" minOccurs="0" />
-			</xsd:sequence>
-		</xsd:complexType>
-		
 			
 			
 		<xsd:simpleType name="Name">
@@ -178,7 +160,7 @@
 			</xsd:restriction>
 		</xsd:simpleType>
 		
-		<xsd:simpleType name="Role">
+		<xsd:simpleType name="Role">	<!-- Not more used -->
 			<xsd:restriction base="xsd:string">
 				<xsd:pattern value="[a-zA-Z ]*" />
 			</xsd:restriction>
@@ -238,6 +220,9 @@
 	</wsdl:message>
 	<wsdl:message name="UnknownCode">
 		<wsdl:part name="fault" element="wfm:UnknownCode"/>
+	</wsdl:message>
+	<wsdl:message name="UnknownWorkflow">
+		<wsdl:part name="fault" element="wfm:UnknownWorkflow"/>
 	</wsdl:message>
 	<wsdl:message name="UnknownActorName">
 		<wsdl:part name="fault" element="wfm:UnknownActorName"/>
@@ -306,7 +291,7 @@
 			</wsdl:documentation>
 			<wsdl:input message="wfm:createNewProcess"/>
 			<wsdl:output message="wfm:createNewProcessResponse"/>
-            <wsdl:fault name="UnknownNames" message="wfm:UnknownNames" />
+            <wsdl:fault name="UnknownNames" message="wfm:UnknownWorkflow" />
         </wsdl:operation>
 		
 		<wsdl:operation name="takeOverAction">
