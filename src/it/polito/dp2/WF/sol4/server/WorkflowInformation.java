@@ -13,10 +13,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.Holder;
 
 import it.polito.dp2.WF.sol4.gen.ActionStatusType;
+import it.polito.dp2.WF.sol4.gen.ErrorMessage;
 import it.polito.dp2.WF.sol4.gen.ObjectFactory;
 import it.polito.dp2.WF.sol4.gen.Process;
 import it.polito.dp2.WF.sol4.gen.UnknownCode;
-import it.polito.dp2.WF.sol4.gen.UnknownCode_Exception;
 import it.polito.dp2.WF.sol4.gen.UnknownNames_Exception;
 import it.polito.dp2.WF.sol4.gen.Workflow;
 import it.polito.dp2.WF.sol4.gen.WorkflowInfoInterface;
@@ -103,16 +103,17 @@ public class WorkflowInformation implements WorkflowInfoInterface {
 
 	@WebMethod
 	@Override
-	public List<ActionStatusType> getActions(String psCode) throws UnknownCode_Exception {
+	public List<ActionStatusType> getActions(String psCode) throws UnknownCode {
 		// ---	This method is not required by the specifications.	--- //
 		log.entering(log.getName(), "getActions", psCode);
 		
 		Process p = manager.getProcess(psCode);
 		if(p==null) {
-			String errorMessage = "The code \""+psCode+"\" is wrong written or does not exists in the structure.";
-			UnknownCode fault = new UnknownCode();
-			fault.setMessage(errorMessage);
-			throw new UnknownCode_Exception(errorMessage, fault);
+			String message = "The code \""+psCode+"\" is wrong written or does not exists in the structure.";
+						
+			ErrorMessage fault = new ErrorMessage();
+			fault.setMessage(message);
+			throw new UnknownCode(message, fault);
 		}
 		
 		log.exiting(log.getName(), "getActions", p.getActionStatus().toString());
