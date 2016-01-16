@@ -50,12 +50,12 @@ public class WorkflowDataManager {
 
 	private ObjectFactory objFactory;
 
+	/**
+	 * This method returns a {@link List} containg all the name of the workflows that are inside the manager.
+	 * @return a {@link List&ltString&gt}
+	 */
 	public List<String> getWorkflowNames() {
 		return this.workflowNames;
-	}
-
-	public GregorianCalendar getLastWorkflowsUpdate() {		// TODO Auto-generated method stub
-		return this.lastWorkflowUpdate;
 	}
 
 	public List<Workflow> getWorkflows(List<String> wfNames) throws UnknownNames_Exception {
@@ -85,6 +85,22 @@ public class WorkflowDataManager {
 		}
 	}
 
+	/**
+	 * This method returns a {@link GregorianCalendar}
+	 * representing the last time that a Workflow was created or modified.
+	 * 
+	 * @return A {@link GregorianCalendar}
+	 */
+	public GregorianCalendar getLastWorkflowsUpdate() {
+		return this.lastWorkflowUpdate;
+	}
+
+	/**
+	 * This method returns a {@link GregorianCalendar}
+	 * representing the last time that a Process was created or modified.
+	 * 
+	 * @return A {@link GregorianCalendar}
+	 */
 	public GregorianCalendar getLastProcessesUpdate() {
 		return this.lastProcessUpdate;
 	}
@@ -121,14 +137,32 @@ public class WorkflowDataManager {
 		return processes;
 	}
 
+	/**
+	 * This method returns a {@link Process} given its ProcessCode.
+	 * If the process does not exists <code>null</code>} is returned.
+	 * 
+	 * @param psCode - The code of the process inside the manager.
+	 * @return A {@link Process} object if the code exists, <code>null</code> otherwise.
+	 */
 	public Process getProcess(String psCode) {
 		return processMap.get(psCode);
 	}
 
+	/**
+	 * This method returns a {@link Workflow} given its name.
+	 * If the workflow does not exists <code>null</code>} is returned.
+	 * 
+	 * @param wfName - The name of the workflow inside the manager.
+	 * @return A {@link Workflow} object if the name exists, <code>null</code> otherwise.
+	 */
 	public Workflow getWorkflow(String wfName) {
 		return workflowMap.get(wfName);
 	}
-
+	
+	/**
+	 * Construct a WorkflowDataManager starting from a {@link WorkflowMonitor} class.
+	 * @param wfMonitor - a {@link WorkflowMonitor}
+	 */
 	public WorkflowDataManager(WorkflowMonitor wfMonitor) {
 		log.entering(log.getName(), "Constructor");
 		objFactory = new ObjectFactory();
