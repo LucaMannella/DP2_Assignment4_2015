@@ -132,6 +132,21 @@
 			</classpath>
 		</java>
 	</target>
+	<target name="debug-server" depends="setseed, build-server" description="Allow to debug the server">
+		<echo>Running server with seed: ${seed}</echo>
+		<java classname="${server.class}" failonerror="true" fork="yes">
+			<!-- this is for debug purpose !-->
+			<jvmarg value="-Xdebug" />
+			<jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5432" />
+			<!-- end debug zone !-->
+			<sysproperty key="it.polito.dp2.WF.Random.seed" value="${seed}"/>
+			<sysproperty key="it.polito.dp2.WF.Random.testcase" value="${testcase}"/>
+			<sysproperty key="it.polito.dp2.WF.WorkflowMonitorFactory" value="${WFInfo.WFMonitorFactory}"/>
+			<classpath>
+				<path refid="server.classpath" />
+			</classpath>
+		</java>
+	</target>
 
 	<target name="run-client2" depends="build-client">
 		<echo>Running client2 with URL=${URL} and WorkflowName=${WorkflowName}</echo>
