@@ -127,8 +127,9 @@ public class ConcreteWorkflowMonitor implements WorkflowMonitor {
 		}
 		
 		// build the ProcessReader Map
-		for( Process p: processesHolder.value ) {
-			ProcessReader pr = new ConcreteProcessReader(p);
+		for( Process p : processesHolder.value ) {
+			WorkflowReader wfr = workflows.get(p.getWorkflow());
+			ProcessReader pr = new ConcreteProcessReader(p, wfr);
 			processes.add(pr);
 		}
 	}
