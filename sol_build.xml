@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="WF-4 my Ant" default="build-server" basedir=".">
+<project name="WF-4 my Ant" default="build-client&amp;server" basedir=".">
 	<description>
-		This is a Script created by Luca Mannella for WF Assignment 4.
+		This is an Ant script created by Luca Mannella for WF Assignment 4.
 	</description>
 
 	<!-- Properties !-->
@@ -42,7 +42,7 @@
 	</target>
 
 	<!-- Server Building !-->
-	<target name="build-server" depends="init, compile-wsdl" description="">
+	<target name="build-server" depends="init, compile-wsdl" >
 		<echo> Building the server... </echo>
 		<javac destdir="${buildDir}" debug="${debug}" debuglevel="${debugLevel}" source="${javaVersion}" target="${javaVersion}" includeantruntime="false">
 			<src path="${srcDir}"/>
@@ -56,9 +56,27 @@
 		<echo>Done.</echo>
 	</target>
 	
+	<!-- Client Building !-->
+	<target name="build-client" depends="init, compile-wsdl" >
+		<echo> Building the client 1... </echo>
+		<javac destdir="${buildDir}" debug="${debug}" debuglevel="${debuglevel}" source="${javaVersion}" target="${javaVersion}" includeantruntime="false">
+			<src path="${srcDir}"/>
+			<src path="${genDir}"/>
+			<include name="it/polito/dp2/WF/sol4/**" />
+			<include name="it/polito/dp2/WF/lab4/*.java" />
+			<classpath>
+				<path refid="sol.classpath" />
+			</classpath>
+		</javac>
+		<echo>Done.</echo>
+	</target>
+  
 	<!-- The classpath to be used for compilation of the solution -->
 	<path id="sol.classpath">
 		<pathelement location="${libDir}/WF.jar"/>
 	</path>
-  
+	
+	<!-- Client & Server Building !-->
+	<target name="build-client&amp;server" depends="init, compile-wsdl, build-server, build-client"/>
+	
 </project>
