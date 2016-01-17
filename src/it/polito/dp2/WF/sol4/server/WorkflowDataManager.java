@@ -1,23 +1,17 @@
 package it.polito.dp2.WF.sol4.server;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.namespace.QName;
 
 import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 
@@ -30,8 +24,8 @@ import it.polito.dp2.WF.WorkflowMonitor;
 import it.polito.dp2.WF.WorkflowReader;
 import it.polito.dp2.WF.sol4.gen.ActionStatusType;
 import it.polito.dp2.WF.sol4.gen.ActionType;
-import it.polito.dp2.WF.sol4.gen.ErrorMessage;
 import it.polito.dp2.WF.sol4.gen.ActionType.SimpleAction;
+import it.polito.dp2.WF.sol4.gen.ErrorMessage;
 import it.polito.dp2.WF.sol4.gen.ObjectFactory;
 import it.polito.dp2.WF.sol4.gen.Process;
 import it.polito.dp2.WF.sol4.gen.UnknownNames;
@@ -71,11 +65,30 @@ public class WorkflowDataManager {
 			throw new UnknownWorkflow(message, faultInfo);
 		}
 		
+		// creating a new process
 		Process newProcess = objFactory.createProcess();
+
 		newProcess.setStarted(new XMLGregorianCalendarImpl());
 		newProcess.setWorkflow(wfName);
-		//newProcess.getActionStatus()
-		//TODO: implement me!
+		
+		// creating the actionStatus elements from the Workflow's actions
+		List<ActionStatusType> actionStatusList = new LinkedList<ActionStatusType>();
+		for(ActionType action : wf.getAction()) {
+			if( action.isAutomInst() ) {
+				ActionStatusType actionStatus = objFactory.createActionStatusType();
+				
+				actionStatus.setAction(action);
+				actionStatus.setActor(null);			//not yet taken
+				actionStatus.setTakenInCharge(false);	//not yet taken
+				actionStatus.setTerminated(false);	//not yet taken so not yet finished
+				
+				actionStatusList.add(actionStatus);
+			}
+		}
+		// adding the actionStatus elements to the new process
+		newProcess.getActionStatus().addAll(actionStatusList);
+		
+		// each process must have a unique code
 		synchronized (this) {
 			newProcess.setCode("p"+pCode);
 			pCode++;
