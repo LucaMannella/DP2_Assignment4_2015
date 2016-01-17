@@ -13,7 +13,6 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.Holder;
 
-import it.polito.dp2.WF.Actor;
 import it.polito.dp2.WF.ProcessReader;
 import it.polito.dp2.WF.WorkflowMonitor;
 import it.polito.dp2.WF.WorkflowMonitorException;
@@ -21,7 +20,6 @@ import it.polito.dp2.WF.WorkflowReader;
 import it.polito.dp2.WF.sol4.gen.Process;
 import it.polito.dp2.WF.sol4.gen.UnknownNames_Exception;
 import it.polito.dp2.WF.sol4.gen.Workflow;
-import it.polito.dp2.WF.sol4.gen.WorkflowControllerInterface;
 import it.polito.dp2.WF.sol4.gen.WorkflowInfoInterface;
 import it.polito.dp2.WF.sol4.gen.WorkflowService;
 
