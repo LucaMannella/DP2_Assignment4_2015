@@ -12,18 +12,20 @@ public class WorkflowMonitorFactory extends it.polito.dp2.WF.WorkflowMonitorFact
 	 */
 	@Override
 	public WorkflowMonitor newWorkflowMonitor() throws WorkflowMonitorException {
-		WorkflowMonitor myMonitor = new ConcreteWorkflowMonitor();
-//		try {
-//			myMonitor = new ConcreteWorkflowMonitor();
-//		} catch (MalformedURLException e) {
-//			System.err.println("Error parsing the URL: "+e.getMessage());
-//			e.printStackTrace();
-//			throw new WorkflowMonitorException("Error parsing the given URL: "+e.getMessage());
-//		} catch (WorkflowMonitorException e) {
-//			System.err.println("Error: "+e.getMessage());
-//			e.printStackTrace();
-//			throw e;
-//		}
+		WorkflowMonitor myMonitor;
+		try {
+			myMonitor = new ConcreteWorkflowMonitor();
+		}
+		catch (MalformedURLException e) {
+			System.err.println("Error parsing the URL: "+e.getMessage());
+			e.printStackTrace();
+			throw new WorkflowMonitorException("Error parsing the given URL: "+e.getMessage());
+		}
+		catch (WorkflowMonitorException e) {
+			System.err.println("Error: "+e.getMessage());
+			e.printStackTrace();
+			throw e;
+		}
 		
 		return myMonitor;
 	}
