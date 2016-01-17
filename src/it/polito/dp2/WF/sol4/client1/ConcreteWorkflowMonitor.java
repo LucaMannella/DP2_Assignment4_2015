@@ -3,6 +3,8 @@ package it.polito.dp2.WF.sol4.client1;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,6 +13,7 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.Holder;
 
+import it.polito.dp2.WF.Actor;
 import it.polito.dp2.WF.ProcessReader;
 import it.polito.dp2.WF.WorkflowMonitor;
 import it.polito.dp2.WF.WorkflowMonitorException;
@@ -34,10 +37,9 @@ public class ConcreteWorkflowMonitor implements WorkflowMonitor {
 	private static final String DEFAUL_WS_URL = "http://localhost:7071/wfinfo";
 	
 	private WorkflowInfoInterface proxyReader;
-	private WorkflowControllerInterface proxyController;
 	
 	private Map<String, WorkflowReader> workflows;
-	private Map<String,ProcessReader> processes;
+	private HashSet<ProcessReader> processes;
 	private XMLGregorianCalendar lastUpdateTime;
 	
 	/**
@@ -56,10 +58,9 @@ public class ConcreteWorkflowMonitor implements WorkflowMonitor {
 		// creating the URL object
 		URL webServiceURL = new URL(webServiceURLString);
 		
-		// taking the ports (proxies) from the service
+		// taking the port: WorkflowInfoPort (proxy) from the service
 		WorkflowService service = new WorkflowService(webServiceURL);
 		proxyReader = service.getWorkflowInfoPort();
-		proxyController = service.getWorkflowControllerPort();
 		
 		// building the maps
 		System.out.println("...Building the WorkflowMonitor...");
@@ -95,7 +96,7 @@ public class ConcreteWorkflowMonitor implements WorkflowMonitor {
 			WorkflowReader wfr = new ConcreteWorkflowReader(wf);
 			workflows.put(wfr.getName(), wfr);
 		}
-		// this loop is to managing the ProcessActions	//TODO: do we need this method anymore?
+		// this loop is to managing the ProcessActions	//TODO: fix here!
 		for( WorkflowReader wf : workflows.values() ) {
 			if(wf instanceof ConcreteWorkflowReader)
 				((ConcreteWorkflowReader)wf).setWfsInsideProcessActions(workflows);
@@ -108,7 +109,7 @@ public class ConcreteWorkflowMonitor implements WorkflowMonitor {
 	 * @throws WorkflowMonitorException If something wrong or unexpected happens.
 	 */
 	private void buildProcessReaders() throws WorkflowMonitorException {
-		processes = new HashMap<String, ProcessReader>();
+		processes = new HashSet<ProcessReader>();
 		
 		Holder<List<String>> wokflowNamesHolder = new Holder<List<String>>();
 		Holder<XMLGregorianCalendar> calendarHolder = new Holder<XMLGregorianCalendar>();
@@ -130,26 +131,44 @@ public class ConcreteWorkflowMonitor implements WorkflowMonitor {
 		// build the ProcessReader Map
 		for( Process p: processesHolder.value ) {
 			ProcessReader pr = new ConcreteProcessReader(p);
-			processes.put(p.getCode(), pr);
+			processes.add(pr);
 		}
 	}
 
 	@Override
 	public Set<ProcessReader> getProcesses() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.processes;
 	}
 
 	@Override
-	public WorkflowReader getWorkflow(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public WorkflowReader getWorkflow(String name) {
+		return workflows.get(name);
 	}
 
 	@Override
 	public Set<WorkflowReader> getWorkflows() {
-		// TODO Auto-generated method stub
-		return null;
+		return new LinkedHashSet<WorkflowReader>(workflows.values());
 	}
 
+	@Override
+	public String toString(){
+		StringBuffer buf = new StringBuffer("Inside this WorkflowMonitor there are:\n");
+		
+		if((workflows==null) || (workflows.isEmpty()))
+			buf.append("\tNo Workflows\n");
+		else {
+			for(WorkflowReader wfr : workflows.values())
+				buf.append("\t"+wfr.toString()+"\n");
+		}
+		
+		if((processes==null) || (processes.isEmpty()))
+			buf.append("\tNo Processes\n");
+		else {
+			buf.append("Processes:\n");
+			for(ProcessReader pr : processes)
+				buf.append("\t"+pr.toString()+"\n");
+		}
+		
+		return buf.toString();
+	}
 }
