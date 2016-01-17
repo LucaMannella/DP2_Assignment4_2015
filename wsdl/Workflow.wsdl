@@ -424,14 +424,21 @@
 
 	<wsdl:service name="WorkflowService">
 		<wsdl:documentation>
-			This service has been thought according to the requirements of part B.
-			The WorkflowInfoPort have to be used for retrieving data related to the workflows.
-			The WorkflowControllerPort have to be used for sending command to the WS to manipulate the data related to the workflows.
+			This service allows to get and modify data related to a Workflow Management System.
+			This service has been thought according also to the requirements of part B.
 		</wsdl:documentation>
+		
     	<wsdl:port name="WorkflowInfoPort" binding="wfm:WorkflowInfoPortBinding">
+    		<wsdl:documentation>
+    			This port have to be used for retrieving data related to the workflows.
+    		</wsdl:documentation>
 			<soap:address location="http://localhost:7071/wfinfo"/>
 		</wsdl:port>
+		
     	<wsdl:port name="WorkflowControllerPort" binding="wfm:WorkflowControllerPortBinding">
+    		<wsdl:documentation>
+    			This port have to be used for sending command to the WS to manipulate the data related to the workflows.
+    		</wsdl:documentation>
     		<soap:address location="http://localhost:7070/wfcontrol" />
     	</wsdl:port>
 	</wsdl:service>
