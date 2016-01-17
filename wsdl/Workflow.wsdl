@@ -6,7 +6,7 @@
 				xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" >
 	<wsdl:documentation>
     	Service: WorkflowService
-    	Version: 2.0
+    	Version: 3.0
     	Owner: Luca Mannella
     </wsdl:documentation>
   			
@@ -319,10 +319,8 @@
 	</wsdl:portType>
 	
 	
-	<wsdl:binding name="WorkflowInfoPortBinding"
-		type="wfm:WorkflowInfoInterface">
-		<soap:binding style="document"
-			transport="http://schemas.xmlsoap.org/soap/http" />
+	<wsdl:binding name="WorkflowInfoPortBinding" type="wfm:WorkflowInfoInterface">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
 
 		<wsdl:operation name="getWorkflowNames">
 			<soap:operation soapAction="" />
@@ -335,7 +333,7 @@
 		</wsdl:operation>
 
 		<wsdl:operation name="getWorkflows">
-			<soap:operation soapAction="" /><!-- "http://lucamannella.altervista.org/WorkflowManager/getWorkflows" !-->
+			<soap:operation soapAction="" />	<!-- "http://lucamannella.altervista.org/WorkflowManager/getWorkflows" !-->
 			<wsdl:input>
 				<soap:body use="literal" />
 			</wsdl:input>
@@ -361,7 +359,7 @@
 		</wsdl:operation>
 		
 		<wsdl:operation name="getActions">
-			<soap:operation soapAction="" /><!-- "http://lucamannella.altervista.org/WorkflowManager/getActions" !-->
+			<soap:operation soapAction="" />	<!-- "http://lucamannella.altervista.org/WorkflowManager/getActions" !-->
 			<wsdl:input>
 				<soap:body use="literal" />
 			</wsdl:input>
@@ -425,6 +423,11 @@
 
 
 	<wsdl:service name="WorkflowService">
+		<wsdl:documentation>
+			This service has been thought according to the requirements of part B.
+			The WorkflowInfoPort have to be used for retrieving data related to the workflows.
+			The WorkflowControllerPort have to be used for sending command to the WS to manipulate the data related to the workflows.
+		</wsdl:documentation>
     	<wsdl:port name="WorkflowInfoPort" binding="wfm:WorkflowInfoPortBinding">
 			<soap:address location="http://localhost:7071/wfinfo"/>
 		</wsdl:port>
