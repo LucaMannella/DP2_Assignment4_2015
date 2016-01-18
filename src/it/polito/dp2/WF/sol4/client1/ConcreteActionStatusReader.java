@@ -79,22 +79,6 @@ public class ConcreteActionStatusReader implements ActionStatusReader, Comparabl
 	}
 
 	@Override
-	public int compareTo(ActionStatusReader o) {
-		if( terminated && (o.isTerminated()) )
-			return terminationTime.compareTo(o.getTerminationTime());
-		else if( terminated && (!o.isTerminated()) )
-			return -1;
-		else if( (!terminated) && (o.isTerminated()) )
-			return 1;
-		else if( takenInCharge && (!o.isTakenInCharge()))
-			return -1;
-		else if( (!takenInCharge) && (o.isTakenInCharge()) )
-			return 1;
-		else
-			return 0;
-	}
-
-	@Override
 	public String toString() {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
 		
@@ -110,6 +94,22 @@ public class ConcreteActionStatusReader implements ActionStatusReader, Comparabl
 			buf.append(" - not taken in charge by anyone");
 
 		return buf.toString();
+	}
+
+	@Override
+	public int compareTo(ActionStatusReader o) {
+		if( terminated && (o.isTerminated()) )
+			return terminationTime.compareTo(o.getTerminationTime());
+		else if( terminated && (!o.isTerminated()) )
+			return -1;
+		else if( (!terminated) && (o.isTerminated()) )
+			return 1;
+		else if( takenInCharge && (!o.isTakenInCharge()))
+			return -1;
+		else if( (!takenInCharge) && (o.isTakenInCharge()) )
+			return 1;
+		else
+			return 0;
 	}
 	
 }
