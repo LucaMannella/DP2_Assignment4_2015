@@ -11,6 +11,12 @@ import it.polito.dp2.WF.WorkflowReader;
 import it.polito.dp2.WF.sol4.gen.ActionStatusType;
 import it.polito.dp2.WF.sol4.gen.Process;
 
+/**
+ * This is a concrete implementation of the interface ProcessReader based on the JAX-WS framework.
+ * 
+ * @see {@link WorkflowReader}
+ * @author Luca
+ */
 public class ConcreteProcessReader implements ProcessReader, Comparable<ProcessReader> {
 
 	private Calendar startTime;
