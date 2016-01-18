@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="WF-4 my Ant" default="build-client&amp;server" basedir=".">
+<project name="WF-4 my Ant" default="build-clients&amp;server" basedir=".">
 	<description>
 		This is an Ant script created by Luca Mannella for WF Assignment 4.
 	</description>
@@ -47,8 +47,8 @@
 		<javac destdir="${buildDir}" debug="${debug}" debuglevel="${debugLevel}" source="${javaVersion}" target="${javaVersion}" includeantruntime="false">
 			<src path="${srcDir}"/>
 			<src path="${genDir}"/>
-			<include name="it/polito/dp2/WF/sol4/**" />
-			<include name="it/polito/dp2/WF/lab4/*.java" />
+			<include name="it/polito/dp2/WF/sol4/util/*.java" />
+			<include name="it/polito/dp2/WF/sol4/server/*.java" />
 			<classpath>
 				<path refid="sol.classpath" />
 			</classpath>
@@ -58,12 +58,12 @@
 	
 	<!-- Client Building !-->
 	<target name="build-client" depends="init, compile-wsdl" >
-		<echo> Building the client 1... </echo>
+		<echo> Building the clients... </echo>
 		<javac destdir="${buildDir}" debug="${debug}" debuglevel="${debuglevel}" source="${javaVersion}" target="${javaVersion}" includeantruntime="false">
 			<src path="${srcDir}"/>
 			<src path="${genDir}"/>
-			<include name="it/polito/dp2/WF/sol4/**" />
-			<include name="it/polito/dp2/WF/lab4/*.java" />
+			<include name="it/polito/dp2/WF/sol4/client1/*.java" />
+			<include name="it/polito/dp2/WF/sol4/client2/*.java" />
 			<classpath>
 				<path refid="sol.classpath" />
 			</classpath>
@@ -77,6 +77,6 @@
 	</path>
 	
 	<!-- Client & Server Building !-->
-	<target name="build-client&amp;server" depends="init, compile-wsdl, build-server, build-client"/>
+	<target name="build-clients&amp;server" depends="init, compile-wsdl, build-server, build-client"/>
 	
 </project>
