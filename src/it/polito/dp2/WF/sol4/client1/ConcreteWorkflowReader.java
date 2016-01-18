@@ -16,9 +16,9 @@ import it.polito.dp2.WF.sol4.gen.ActionType;
 import it.polito.dp2.WF.sol4.gen.Workflow;
 
 /**
- * This is a concrete implementation of the interface WorkflowReader based on the JAX-WS framework.<BR><BR>
- * If you want more detail about the interface look to {@link it.polito.dp2.WF.WorkflowReader}
+ * This is a concrete implementation of the interface WorkflowReader based on the JAX-WS framework.
  * 
+ * @see {@link WorkflowReader}
  * @author Luca
  */
 public class ConcreteWorkflowReader implements WorkflowReader, Comparable<WorkflowReader> {
