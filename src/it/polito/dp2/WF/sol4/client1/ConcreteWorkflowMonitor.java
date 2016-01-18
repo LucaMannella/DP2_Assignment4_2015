@@ -24,9 +24,9 @@ import it.polito.dp2.WF.sol4.gen.WorkflowInfoInterface;
 import it.polito.dp2.WF.sol4.gen.WorkflowService;
 
 /**
- * This is a concrete implementation of the interface WorkflowMonitor based on the JAX-WS framework.<BR><BR>
- * If you want more detail about the interface look to {@link it.polito.dp2.WF.WorkflowMonitor}
+ * This is a concrete implementation of the interface WorkflowMonitor based on the JAX-WS framework.
  * 
+ * @see {@link WorkflowMonitor}
  * @author Luca
  */
 public class ConcreteWorkflowMonitor implements WorkflowMonitor {
@@ -94,7 +94,7 @@ public class ConcreteWorkflowMonitor implements WorkflowMonitor {
 			WorkflowReader wfr = new ConcreteWorkflowReader(wf);
 			workflows.put(wfr.getName(), wfr);
 		}
-		// this loop is to managing the ProcessActions	//TODO: fix here!
+		// this loop is to managing the ProcessActions
 		for( WorkflowReader wf : workflows.values() ) {
 			if(wf instanceof ConcreteWorkflowReader)
 				((ConcreteWorkflowReader)wf).setWfsInsideProcessActions(workflows);
