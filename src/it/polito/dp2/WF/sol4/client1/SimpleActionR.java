@@ -12,13 +12,11 @@ import it.polito.dp2.WF.WorkflowReader;
 import it.polito.dp2.WF.sol4.gen.ActionType;
 
 /**
- * This is a concrete implementation of abstract class AbstractActionReader (that implements the interface ActionReader).<BR>
- * Another implementation of that abstract class is {@link it.polito.dp2.WF.sol4.client1.ProcessActionR}<br>
- * This implementation is based on JAXB framework.<BR><BR>
- * If you want more detail about the interface look to<BR>
- * {@link it.polito.dp2.WF.sol4.client1.AbstractActionReader}<BR>
- * {@link it.polito.dp2.WF.ActionReader}
+ * This is a concrete implementation of abstract class AbstractActionReader 
+ * (that implements the interface ActionReader) based on JAX-WS framework.<BR>
+ * Another implementation of that abstract class is {@link ProcessActionR}<br>
  * 
+ * @see {@link ActionReader}, {@link AbstractActionReader}, {@link ProcessActionR}
  * @author Luca
  */
 public class SimpleActionR extends AbstractActionReader implements SimpleActionReader {
