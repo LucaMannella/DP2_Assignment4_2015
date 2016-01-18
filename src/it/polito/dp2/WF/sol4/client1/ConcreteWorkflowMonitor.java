@@ -50,8 +50,10 @@ public class ConcreteWorkflowMonitor implements WorkflowMonitor {
 		
 		// taking the URL of the Web Service
 		String webServiceURLString = System.getProperty(SYS_PROP_URL);
-		if(webServiceURLString == null)
+		if(webServiceURLString == null) {
+			System.out.println("No URL was set. Will be used the default one: "+DEFAUL_WS_URL);
 			webServiceURLString = DEFAUL_WS_URL;
+		}
 		
 		// creating the URL object
 		URL webServiceURL = new URL(webServiceURLString);
