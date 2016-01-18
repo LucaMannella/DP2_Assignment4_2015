@@ -8,7 +8,7 @@ import it.polito.dp2.WF.WorkflowMonitorException;
 public class WorkflowMonitorFactory extends it.polito.dp2.WF.WorkflowMonitorFactory {
 
 	/**
-	 * This method creates an instance of my concrete class that implements the WorkflowMonitor interface.
+	 * This method creates an instance of my concrete class that implements the {@link WorkflowMonitor} interface.
 	 */
 	@Override
 	public WorkflowMonitor newWorkflowMonitor() throws WorkflowMonitorException {
