@@ -11,9 +11,10 @@ import it.polito.dp2.WF.sol4.gen.Workflow;
 public class Utility {
 
 	/**
-	 * This method create a Map of Workflow starting from a Set
+	 * This method create a Map of {@link Workflow} starting from a Set.
+	 * The name of the workflow will be the key of the Map.
 	 * @param workflowsSet
-	 * @return A workflow HashMap that use the workflow's name as key
+	 * @return A workflow {@link HashMap} that use the workflow's name as key
 	 */
 	public static Map<String, Workflow> buildWFMap(Set<Workflow> workflowsSet) {
 		Map<String, Workflow> workflowsMap = new HashMap<String, Workflow>();
@@ -23,7 +24,12 @@ public class Utility {
 		return workflowsMap;
 	}
 	
-	
+	/**
+	 * This method create a Map of {@link ActionType} starting from a List.
+	 * The name of Action will be the key of the Map.
+	 * @param workflowsSet
+	 * @return An ActionType HashMap that use the action's name as key
+	 */
 	public static Map<String, ActionType> buildWFActionsMap(List<ActionType> actionsList) {
 		Map<String, ActionType> wfActionsMap = new HashMap<String, ActionType>();
 		for(ActionType act : actionsList) {
