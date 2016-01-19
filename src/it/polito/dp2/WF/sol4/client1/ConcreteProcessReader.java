@@ -59,7 +59,7 @@ public class ConcreteProcessReader implements ProcessReader, Comparable<ProcessR
 		buf.append("started at <"+dateFormat.format(startTime.getTimeInMillis())+"> with "+statusActions.size()+" ActionStatus\n");
 		
 		for(ActionStatusReader asr : statusActions) {
-			buf.append("\t\t"+asr.toString()+"\n");
+			buf.append("\t"+asr.toString()+"\n");
 		}
 		return buf.toString();
 	}

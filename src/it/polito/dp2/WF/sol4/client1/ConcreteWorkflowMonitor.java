@@ -185,7 +185,7 @@ public class ConcreteWorkflowMonitor implements WorkflowMonitor {
 			buf.append("\tNo Processes\n");
 		else {
 			for(ProcessReader pr : processes)
-				buf.append("\t"+pr.toString()+"\n");
+				buf.append(pr.toString()+"\n");
 		}
 		buf.append("\n\n");
 		

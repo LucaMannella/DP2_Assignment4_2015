@@ -43,7 +43,7 @@ public class SimpleActionR extends AbstractActionReader implements SimpleActionR
 		for(ActionReader ar : nextPossibleActions.values())
 			buf.append(ar.getName());
 		
-		return super.toString()+"\n\t\t"+buf.toString();
+		return super.toString()+"\n\t\t\t"+buf.toString();
 	}
 
 	/**
