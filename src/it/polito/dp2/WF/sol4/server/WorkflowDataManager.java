@@ -1,5 +1,6 @@
 package it.polito.dp2.WF.sol4.server;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -13,8 +14,6 @@ import java.util.logging.Logger;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-
-import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 
 import it.polito.dp2.WF.ActionReader;
 import it.polito.dp2.WF.ActionStatusReader;
@@ -46,12 +45,12 @@ public class WorkflowDataManager {
 	
 	private Map<String, Workflow> workflowMap = null;
 	private Map<String, Process> processMap = null;
-	private int pCode = 0;
+	private int intCode = 0;
 	
 	private List<String> workflowNames;
 	
-	private GregorianCalendar lastWorkflowUpdate;
-	private GregorianCalendar lastProcessUpdate;
+	private XMLGregorianCalendar lastWorkflowUpdate;
+	private XMLGregorianCalendar lastProcessUpdate;
 
 	private ObjectFactory objFactory;
 
@@ -97,7 +96,7 @@ public class WorkflowDataManager {
 	 * 
 	 * @return A {@link GregorianCalendar}
 	 */
-	public GregorianCalendar getLastWorkflowsUpdate() {
+	public XMLGregorianCalendar getLastWorkflowsUpdate() {
 		return this.lastWorkflowUpdate;
 	}
 
@@ -107,7 +106,7 @@ public class WorkflowDataManager {
 	 * 
 	 * @return A {@link GregorianCalendar}
 	 */
-	public GregorianCalendar getLastProcessesUpdate() {
+	public XMLGregorianCalendar getLastProcessesUpdate() {
 		return this.lastProcessUpdate;
 	}
 
@@ -178,7 +177,7 @@ public class WorkflowDataManager {
 		// creating a new process
 		Process newProcess = objFactory.createProcess();
 	
-		newProcess.setStarted(new XMLGregorianCalendarImpl());
+		newProcess.setStarted( createXMLGregCalendar() );
 		newProcess.setWorkflow(wfName);
 		
 		// creating the actionStatus elements from the Workflow's actions
@@ -199,12 +198,15 @@ public class WorkflowDataManager {
 		newProcess.getActionStatus().addAll(actionStatusList);
 		
 		// each process must have a unique code
+		String myProcCode;
 		synchronized (this) {
-			newProcess.setCode("p"+pCode);
-			pCode++;
+			myProcCode = "p"+intCode;	//I create a local copy of the code
+			intCode++;					//I increment the code for the next process
 		}
+		newProcess.setCode(myProcCode);
+		processMap.put(myProcCode, newProcess);
 		
-		return "p"+pCode;
+		return myProcCode;
 	}
 
 	public boolean completeAction(String actionStatusName, String nextActionName) {
@@ -213,7 +215,52 @@ public class WorkflowDataManager {
 	}
 
 	/**
+	 * This method create a {@link XMLGregorianCalendar} instance with the current timestamp.
+	 * 
+	 * @return A {@link XMLGregorianCalendar} instance
+	 */
+	private XMLGregorianCalendar createXMLGregCalendar() {
+		GregorianCalendar cal = new GregorianCalendar();
+		XMLGregorianCalendar startTime = null;
+		
+		try {
+			startTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
+		}
+		catch (DatatypeConfigurationException e) {
+			System.err.println("Error! There is a problem with the instantiation of the DatatypeFactory");
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		}
+		
+		return startTime;
+	}
+	
+	/**
+	 * This method create a {@link XMLGregorianCalendar} instance with the same time of the calendar given as parameter.
+	 * 
+	 * @param calendar - An instance of {@link Calendar} interface.
+	 * @return A {@link XMLGregorianCalendar} instance
+	 */
+	private XMLGregorianCalendar createXMLGregCalendar(Calendar calendar) {
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.setTimeInMillis(calendar.getTimeInMillis());
+		
+		XMLGregorianCalendar startTime = null;
+		try {
+			startTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
+		}
+		catch (DatatypeConfigurationException e) {
+			System.err.println("Error! There is a problem with the instantiation of the DatatypeFactory");
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		}
+		
+		return startTime;
+	}
+
+	/**
 	 * Construct a WorkflowDataManager starting from a {@link WorkflowMonitor} class.
+	 * 
 	 * @param wfMonitor - a {@link WorkflowMonitor}
 	 */
 	public WorkflowDataManager(WorkflowMonitor wfMonitor) {
@@ -232,14 +279,17 @@ public class WorkflowDataManager {
 			workflowMap.put(wfName, wf);
 			workflowNames.add(wfName);
 		}
-		lastWorkflowUpdate = new GregorianCalendar();
+		lastWorkflowUpdate = createXMLGregCalendar();
 		
 		for( ProcessReader psr : wfMonitor.getProcesses() ) {
-			Process ps = buildProcess(psr);
-			processMap.put("p"+pCode, ps);
-			pCode++;
+			String pCode = "p"+intCode;
+			
+			Process ps = buildProcess(pCode, psr);
+			processMap.put(pCode, ps);
+			
+			intCode++;	//we are in the constructor, intCode is not yet shared
 		}
-		lastProcessUpdate = new GregorianCalendar();
+		lastProcessUpdate = createXMLGregCalendar();
 		
 		log.exiting(log.getName(), "Constructor");
 	}
@@ -351,7 +401,7 @@ public class WorkflowDataManager {
 	 * @param wfr 
 	 * @return
 	 */
-	private Process buildProcess(ProcessReader psr) {
+	private Process buildProcess(String code, ProcessReader psr) {
 		// creating a process
 		Process process = objFactory.createProcess();
 		
@@ -359,21 +409,12 @@ public class WorkflowDataManager {
 		String wfName = psr.getWorkflow().getName();
 		
 		// setting process attributes
-		process.setCode("p"+pCode);
+		process.setCode(code);
 		process.setWorkflow(wfName);
 		
 		// - Generating and setting the XMLGregorianCalendar - //
-		GregorianCalendar cal = new GregorianCalendar();
-		cal.setTime(psr.getStartTime().getTime());
-		try {
-			XMLGregorianCalendar startTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
-			process.setStarted(startTime);
-		}
-		catch (DatatypeConfigurationException e) {
-			System.err.println("Error! There is a problem with the instantiation of the DatatypeFactory");
-			System.err.println(e.getMessage());
-			e.printStackTrace();
-		}
+		XMLGregorianCalendar startTime = createXMLGregCalendar(psr.getStartTime());
+		process.setStarted(startTime);
 		
 		// - preparing data for the creation of the actions - //
 		Workflow wf = workflowMap.get(wfName);
@@ -384,7 +425,6 @@ public class WorkflowDataManager {
 		for ( ActionStatusReader asr : psr.getStatus() ) {
 			
 			ActionType actType = wfActionsTypeMap.get(asr.getActionName());
-			if(actType == null) System.err.println("DEBUG - Banana!"); //TODO: FIX ME!
 			ActionStatusType as = buildActionStatus(asr, actType);
 			newActions.add(as);
 		}
@@ -418,18 +458,7 @@ public class WorkflowDataManager {
 
 		if (asr.isTerminated())	{		//was the action completed?
 			// - Generating a new XMLGregorianCalendar - //
-			GregorianCalendar cal = new GregorianCalendar();
-			cal.setTime(asr.getTerminationTime().getTime());
-			XMLGregorianCalendar endTime = null;
-			try {
-				endTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
-			} catch (DatatypeConfigurationException e) {
-				System.err.println("Error! There is a problem with the instantiation of the DatatypeFactory");
-				System.err.println(e.getMessage());
-				e.printStackTrace();
-				//endTime = new XMLGregorianCalendarImpl(cal);
-			}
-			
+			XMLGregorianCalendar endTime = createXMLGregCalendar( asr.getTerminationTime() );
 			action.setTimestamp(endTime);
 		}
 		
