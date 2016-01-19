@@ -56,10 +56,10 @@ public class ConcreteProcessReader implements ProcessReader, Comparable<ProcessR
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
 		
 		StringBuffer buf = new StringBuffer("Process related to workflow <"+myWorkflow.getName()+"> ");
-		buf.append("started at <"+dateFormat.format(startTime.getTimeInMillis())+">\n");
+		buf.append("started at <"+dateFormat.format(startTime.getTimeInMillis())+"> with "+statusActions.size()+" ActionStatus\n");
 		
 		for(ActionStatusReader asr : statusActions) {
-			buf.append("\t"+asr.toString()+"\n");
+			buf.append("\t\t"+asr.toString()+"\n");
 		}
 		return buf.toString();
 	}
