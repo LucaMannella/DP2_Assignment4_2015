@@ -121,10 +121,14 @@
 		</ant>
 	</target>
 
-	<!-- Run Server !-->
-	<target name="run-server" depends="setseed, build-server">
+	<!-- Debug Server (added by me) !-->
+	<target name="debug-server" depends="setseed, build-server" description="Allow to debug the server">
 		<echo>Running server with seed: ${seed}</echo>
 		<java classname="${server.class}" failonerror="true" fork="yes">
+			<!-- this is for debug purpose !-->
+			<jvmarg value="-Xdebug" />
+			<jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5432" />
+			<!-- end debug zone !-->
 			<sysproperty key="it.polito.dp2.WF.Random.seed" value="${seed}"/>
 			<sysproperty key="it.polito.dp2.WF.Random.testcase" value="${testcase}"/>
 			<sysproperty key="it.polito.dp2.WF.WorkflowMonitorFactory" value="${WFInfo.WFMonitorFactory}"/>
@@ -134,14 +138,10 @@
 		</java>
 	</target>
 	
-	<!-- Debug Server (added by me) !-->
-	<target name="debug-server" depends="setseed, build-server" description="Allow to debug the server">
+	<!-- Run Server !-->
+	<target name="run-server" depends="setseed, build-server">
 		<echo>Running server with seed: ${seed}</echo>
 		<java classname="${server.class}" failonerror="true" fork="yes">
-			<!-- this is for debug purpose !-->
-			<jvmarg value="-Xdebug" />
-			<jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5432" />
-			<!-- end debug zone !-->
 			<sysproperty key="it.polito.dp2.WF.Random.seed" value="${seed}"/>
 			<sysproperty key="it.polito.dp2.WF.Random.testcase" value="${testcase}"/>
 			<sysproperty key="it.polito.dp2.WF.WorkflowMonitorFactory" value="${WFInfo.WFMonitorFactory}"/>
@@ -184,7 +184,6 @@
 		</parallel>
 	</target>
 	
-	<!-- Target runFuncTest.real	-->
 	<target name="runFuncTest.real" depends="run-client2">
 		<junit printsummary="yes" dir="." fork="yes" haltonfailure="no" showoutput="no" filtertrace="true" timeout="120000">
 			<jvmarg value="-Djava.awt.headless=true" />

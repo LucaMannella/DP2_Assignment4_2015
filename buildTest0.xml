@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="WF-SampleTest" default="run-final-test" basedir=".">
+	<description>
+			Script for WF Sample final test
+	</description>
+	
+	<!-- The lolcation of this assignment -->
+	<property name="lab4.location" location="." />
+	<!-- The random "WorkflowMonitorFactory" used for WFInfo, for the server and for the tests -->
+	<property name="WFInfo.WFMonitorFactory" value="it.polito.dp2.WF.Random.WorkflowMonitorFactoryImpl" />
+	
+	<!-- The location to be used for class files -->
+	<property name="build.dir" location="${lab4.location}/build" />
+	<!-- The location for source files -->
+	<property name="src.dir" location="${lab4.location}/src" />
+	<!-- The location for jar files -->
+	<property name="lib.dir" location="${lab4.location}/lib" />
+
+	<!-- The ant file to be provided for client and server compilation -->
+	<property name="sol.build.file" value="sol_build.xml" />
+	<property name="sol.build.filepath" location="${lab4.location}/${sol.build.file}" />
+	
+	<!-- The default test case -->
+	<property name="testcase" value="2" />
+	<!-- The default test class -->
+	<property name="test.class" value="it.polito.dp2.WF.lab4.tests.WFTest0" />
+	<!-- The default URL to be used by client2 -->
+	<property name="URL" value="http://localhost:7070/wfcontrol" />
+	<property name="URL2" value="http://localhost:7071/wfinfo" />
+	<!-- The default workflow to be instantiated by client2 -->
+	<property name="WorkflowName" value="ArticleProduction" />
+	
+	<!-- The zip file with the solution to be submitted -->
+	<property name="sol.zip" value="solution.zip" />
+	
+	<!-- The server and client classes -->
+	<property name="server.class" value="it.polito.dp2.WF.sol4.server.WorkflowServer" />
+	<property name="client.class" value="it.polito.dp2.WF.sol4.client2.WFControlClient" />
+	
+	<!-- The classpath that includes only the WF.jar -->
+	<path id="WF.classpath">
+		<pathelement location="${lib.dir}/WF.jar"/>
+	</path>
+
+	<path id="server.classpath">
+		<pathelement location="${lab4.location}/lib/WF.jar" />
+		<pathelement location="${lab4.location}/lib/WFRandom.jar" />
+		<pathelement path="${build.dir}" />
+	</path>
+	
+	<!-- The classpath to be used for running the tests -->
+	<path id="test.classpath">
+		<pathelement location="${lab4.location}/lib/WF.jar" />
+		<pathelement location="${lab4.location}/lib/lab4.jar" />
+		<pathelement location="${lab4.location}/lib/WFRandom.jar" />
+		<pathelement location="${lab4.location}/lib/junit-4.5.jar" />
+		<pathelement path="${build.dir}" />
+		<pathelement location="${lib.dir}/lab4_0.jar"/>
+	</path>
+
+	<path id="client.classpath">
+		<pathelement path="${build.dir}" />
+	</path>
+
+	<target name="setseed" unless="seed">
+		<tstamp>
+			<format property="seed" pattern="1HHmmss" />
+		</tstamp>
+	</target>
+
+	<target name="init">
+		<mkdir dir="${build.dir}" />
+	</target>
+
+	<target name="build-client" depends="init">
+		<ant antfile="${sol.build.filepath}" target="build-client">
+			<property name="basedir" value="${lab4.location}" />
+		</ant>
+	</target>
+	
+	<target name="run-final-test" depends="setseed">
+		<echo>Running functional test</echo>
+		<echo>Seed: ${seed}</echo>
+
+		<parallel>
+		  <daemons>
+			<ant antfile="build.xml" target="run-server">
+				<property name="basedir" value="${lab4.location}"/>
+				<property name="seed" value="${seed}"/>
+				<property name="testcase" value="2"/>
+			</ant>
+		  </daemons>
+		<sequential>
+			<sleep seconds="10"/>
+			<antcall target="runFuncTest.real">
+				<param name="test.class" value="${test.class}" />
+				<param name="exit.code" value="126" />
+			</antcall>
+		</sequential>
+		</parallel>
+	</target>
+	
+	<!-- Target runFuncTest.real	-->
+	<target name="runFuncTest.real" depends="build-client">
+		<junit printsummary="yes" dir="." fork="yes" haltonfailure="no" showoutput="no" filtertrace="true" timeout="120000">
+			<jvmarg value="-Djava.awt.headless=true" />
+			<sysproperty key="it.polito.dp2.WF.Random.seed" value="${seed}"/>
+			<!-- We force testcase 2 -->
+			<sysproperty key="it.polito.dp2.WF.Random.testcase" value="2"/>
+			<sysproperty key="it.polito.dp2.WF.WorkflowMonitorFactory" value="${WFInfo.WFMonitorFactory}" />
+			<sysproperty key="it.polito.dp2.WF.lab4.test.numproc" value="0" />
+			<sysproperty key="it.polito.dp2.WF.lab4.URL" value="${URL2}" />
+			<formatter type="brief" usefile="false"/>
+			<test haltonfailure="no" failureproperty="test_failed" name="${test.class}"/>
+			<classpath>
+				<path refid="test.classpath" />
+			</classpath>
+		</junit>
+		<fail if="test_failed" status="${exit.code}" message="*** Some Tests FAILED ***"/>
+		<echo>*** All Tests PASSED  ***</echo>
+	</target>
+
+	<!-- target for cleaning -->
+	<target name="clean">
+		<delete dir="${build.dir}" />
+	</target>
+
+	<!--target for building the final zip containing the solution -->
+	<target name="make-final-zip">
+		<zip destfile="${sol.zip}" 
+			basedir="${lab4.location}" 
+			includes="${sol.build.file} wsdl/** custom/* src/it/polito/dp2/WF/sol4/server/**/*.java src/it/polito/dp2/WF/sol4/client1/**/*.java src/it/polito/dp2/WF/sol4/client2/**/*.java answer.txt" />
+	</target>
+</project>
