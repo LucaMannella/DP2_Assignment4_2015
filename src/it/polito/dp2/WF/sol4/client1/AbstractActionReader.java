@@ -55,7 +55,7 @@ public abstract class AbstractActionReader implements ActionReader {
 	
 	@Override
 	public String toString() {
-		return "\tAction: "+name+" - Requested Role: "+role+" - Parent workflow: "+parent.getName()+" - AutomInst: "+automInst;
+		return "Action: "+name+" - Requested Role: "+role+" - Parent workflow: "+parent.getName()+" - AutomInst: "+automInst;
 	}
 
 }
