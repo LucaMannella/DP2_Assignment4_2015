@@ -26,8 +26,8 @@ public class ConcreteActionStatusReader implements ActionStatusReader, Comparabl
 	public ConcreteActionStatusReader(ActionStatusType action, String workflowName) {
 //TODO:	if((action == null) return;	//safety lock
 		String actorRole = null;
-		
-		if( action.getAction() instanceof ActionType ) {
+		Object o = action.getAction();	//TODO: debug purpose
+		if( o instanceof ActionType ) {
 			ActionType azione = (ActionType) action.getAction();
 			
 			// retrieving the action name
@@ -37,7 +37,7 @@ public class ConcreteActionStatusReader implements ActionStatusReader, Comparabl
 		}
 		else
 			System.err.println("\n Error! The IDREF does not refer to an ActionType! \n"
-					+ "It is impossible to set the name of the ActionStatusReader and the role of tha Actor!");
+					+ "It is impossible to set the name of the ActionStatusReader and the role of the Actor!");
 		
 		this.takenInCharge = action.isTakenInCharge();
 		this.terminated = action.isTerminated();
