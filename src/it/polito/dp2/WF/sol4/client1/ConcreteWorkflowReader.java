@@ -1,11 +1,11 @@
 package it.polito.dp2.WF.sol4.client1;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import it.polito.dp2.WF.ActionReader;
 import it.polito.dp2.WF.ProcessActionReader;
@@ -29,7 +29,7 @@ public class ConcreteWorkflowReader implements WorkflowReader, Comparable<Workfl
 	
 	public ConcreteWorkflowReader(Workflow workflow) {
 		actionReaderMap = new HashMap<String, ActionReader>();
-		processes = new HashSet<ProcessReader>();
+		processes = new TreeSet<ProcessReader>();
 		
 //TODO:	if(workflow == null) return;	//safety lock
 		this.name = workflow.getName();
@@ -95,6 +95,34 @@ public class ConcreteWorkflowReader implements WorkflowReader, Comparable<Workfl
 	public int compareTo(WorkflowReader o) {
 		return this.name.compareTo(o.getName());
 	}
+	
+	@Override
+	public String toString() {
+		StringBuffer buf = new StringBuffer("Workflow Name: "+name+"\n");
+			
+		buf.append("\tActions:\n");
+		for(ActionReader ar : actionReaderMap.values()) {
+			buf.append("\t\t"+ar.toString()+"\n");
+		}
+		
+		buf.append("\tProcesses:\n");
+		if(processes.isEmpty()){
+			buf.append("\t\t No Processes \n");
+		}
+		else {
+			for(ProcessReader pr : processes) {
+				if(pr instanceof ConcreteProcessReader) {
+					ConcreteProcessReader cpr = (ConcreteProcessReader) pr;
+					buf.append("\t\t"+cpr.toShortString()+"\n");
+				}
+				else {
+					buf.append("\t\t"+pr.toString()+"\n");
+				}
+			}
+		}
+		
+		return buf.toString();
+	}
 
 	/**
 	 * This method set inside each {@link ProcessActionReader} of this {@link WorkflowReader}
@@ -110,6 +138,23 @@ public class ConcreteWorkflowReader implements WorkflowReader, Comparable<Workfl
 				par.setNextWorkflow(workflows);
 			}
 		}
+	}
+
+	/**
+	 * 	/**
+	 * This method add a {@link ProcessReader} to this {@link WorkflowReader}.
+	 * It is necessary that the process is an instance of this workflow.
+	 * If the object is not the same, the method want that the workflow name is the same.
+	 * 
+	 * @param pr - The processe that you want to add to this workflow.
+	 * @return <code>True</code> if the insertion happens, <code>false</code> otherwise.
+	 */
+	public boolean setProcesses(ProcessReader pr) {
+		if( (pr.getWorkflow() == this) || (this.compareTo(pr.getWorkflow()) == 0) ) {
+			return processes.add(pr);
+		}
+		else
+			return false;
 	}
 
 }
