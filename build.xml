@@ -115,12 +115,13 @@
 		</ant>
 	</target>
 
-	<target name="build-client" depends="init">
+	<target name="build-client" depends="init" description="call the user build-client implementation">
 		<ant antfile="${sol.build.filepath}" target="build-client">
 			<property name="basedir" value="${lab4.location}" />
 		</ant>
 	</target>
 
+	<!-- Run Server !-->
 	<target name="run-server" depends="setseed, build-server">
 		<echo>Running server with seed: ${seed}</echo>
 		<java classname="${server.class}" failonerror="true" fork="yes">
@@ -132,6 +133,8 @@
 			</classpath>
 		</java>
 	</target>
+	
+	<!-- Debug Server (added by me) !-->
 	<target name="debug-server" depends="setseed, build-server" description="Allow to debug the server">
 		<echo>Running server with seed: ${seed}</echo>
 		<java classname="${server.class}" failonerror="true" fork="yes">
@@ -159,31 +162,77 @@
 		</java>
 	</target>
 	
-	<target name="run-tests" depends="setseed">
-		  <echo>Running functional test</echo>
-	   	  <echo>Seed: ${seed}</echo>
+	<target name="run-tests" depends="setseed" description="launch the tests">
+		<echo>Running functional test</echo>
+		<echo>Seed: ${seed}</echo>
 
-	   	  <parallel>
-	   	  	<daemons>
-	   	  		<ant antfile="build.xml" target="run-server">
+		<parallel>
+			<daemons>
+				<ant antfile="build.xml" target="run-server">
 					<property name="basedir" value="${lab4.location}"/>
-	   	  			<property name="seed" value="${seed}"/>
-	   	  			<property name="testcase" value="0"/>
-	   	  		</ant>
-	   	    </daemons>
-	   	  	<sequential>
-	   	  		<sleep seconds="10"/>
-	   			<antcall target="runFuncTest.real">
-	   				<param name="test.class" value="it.polito.dp2.WF.lab4.tests.WFTests" />
-	   				<param name="exit.code" value="126" />
-	   			</antcall>
-	   	  	</sequential>
-	   	  </parallel>
+					<property name="seed" value="${seed}"/>
+					<property name="testcase" value="0"/>
+				</ant>
+			</daemons>
+			<sequential>
+				<sleep seconds="10"/>
+				<antcall target="runFuncTest.real">
+					<param name="test.class" value="it.polito.dp2.WF.lab4.tests.WFTests" />
+					<param name="exit.code" value="126" />
+				</antcall>
+			</sequential>
+		</parallel>
 	</target>
-
+	
 	<!-- Target runFuncTest.real	-->
 	<target name="runFuncTest.real" depends="run-client2">
 		<junit printsummary="yes" dir="." fork="yes" haltonfailure="no" showoutput="no" filtertrace="true" timeout="120000">
+			<jvmarg value="-Djava.awt.headless=true" />
+			<sysproperty key="it.polito.dp2.WF.Random.seed" value="${seed}"/>
+			<sysproperty key="it.polito.dp2.WF.Random.testcase" value="${testcase}"/>
+			<sysproperty key="it.polito.dp2.WF.WorkflowMonitorFactory" value="${WFInfo.WFMonitorFactory}" />
+			<sysproperty key="it.polito.dp2.WF.lab4.test.numproc" value="1" />
+			<sysproperty key="it.polito.dp2.WF.lab4.URL" value="${URL2}" />
+			<formatter type="brief" usefile="false"/>
+			<test haltonfailure="no" failureproperty="test_failed" name="${test.class}"/>
+			<classpath>
+				<path refid="test.classpath" />
+			</classpath>
+		</junit>
+		<fail if="test_failed" status="${exit.code}" message="*** Some Tests FAILED ***"/>
+		<echo>*** All Tests PASSED  ***</echo>
+	</target>
+	
+	<!-- added by me -->
+	<target name="debug-tests" depends="setseed" description="debug the tests">
+		<echo>Debug functional test</echo>
+	   	<echo>Seed: ${seed}</echo>
+		
+		<parallel>
+			<daemons>
+				<ant antfile="build.xml" target="run-server">
+					<property name="basedir" value="${lab4.location}"/>
+					<property name="seed" value="${seed}"/>
+					<property name="testcase" value="0"/>
+				</ant>
+			</daemons>
+			<sequential>
+				<sleep seconds="10"/>
+				<antcall target="debugFuncTest.real">
+					<param name="test.class" value="it.polito.dp2.WF.lab4.tests.WFTests" />
+					<param name="exit.code" value="126" />
+				</antcall>
+			</sequential>
+		</parallel>
+	</target>
+	
+	<!-- added by me !-->
+	<target name="debugFuncTest.real" depends="run-client2">
+		<junit printsummary="yes" dir="." fork="yes" haltonfailure="no" showoutput="no" filtertrace="true"><!-- timeout="120000"> -->
+			<!-- this is for debug purpose !-->
+			<jvmarg value="-Xdebug" />
+			<jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=4321" />
+			<!-- end debug zone !-->
 			<jvmarg value="-Djava.awt.headless=true" />
 			<sysproperty key="it.polito.dp2.WF.Random.seed" value="${seed}"/>
 			<sysproperty key="it.polito.dp2.WF.Random.testcase" value="${testcase}"/>
