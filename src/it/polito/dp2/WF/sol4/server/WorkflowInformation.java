@@ -82,8 +82,10 @@ public class WorkflowInformation implements WorkflowInfoInterface {
 
 	@WebMethod
 	@Override
-	public void getProcesses(List<String> wfNames, Holder<XMLGregorianCalendar> lastModTime, Holder<List<Process>> processes) 
-			throws UnknownNames_Exception {		//TODO: Check me
+	public void getProcesses(List<String> wfNames,																			//input parameters
+			Holder<XMLGregorianCalendar> lastModTime, Holder<List<Process>> processes, Holder<List<Workflow>> workflows)	//output parameters
+			throws UnknownNames_Exception {																					//fault message
+		
 		log.entering(log.getName(), "getProcesses", wfNames.toString());
 		
 		GregorianCalendar cal = manager.getLastProcessesUpdate();
@@ -96,6 +98,7 @@ public class WorkflowInformation implements WorkflowInfoInterface {
 			//startTime = new XMLGregorianCalendarImpl(cal);
 		}
 		
+		workflows.value = manager.getWorkflows(wfNames);
 		processes.value = manager.getProcesses(wfNames);
 		
 		log.exiting(log.getName(), "getProcesses", lastModTime.value.toString());
