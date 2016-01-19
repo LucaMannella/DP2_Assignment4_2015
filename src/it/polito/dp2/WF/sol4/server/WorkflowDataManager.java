@@ -2,6 +2,7 @@ package it.polito.dp2.WF.sol4.server;
 
 import java.util.Collection;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -55,48 +56,6 @@ public class WorkflowDataManager {
 	private ObjectFactory objFactory;
 
 	
-	public String createNewProcess(String wfName) throws UnknownWorkflow {
-		Workflow wf = workflowMap.get(wfName);
-		if(wf == null) {
-			String message = "Impossible to create a new process! The specified workflow \""+wfName+"\" does not exists!";
-			
-			ErrorMessage faultInfo = objFactory.createErrorMessage();
-			faultInfo.setMessage(message);
-			throw new UnknownWorkflow(message, faultInfo);
-		}
-		
-		// creating a new process
-		Process newProcess = objFactory.createProcess();
-
-		newProcess.setStarted(new XMLGregorianCalendarImpl());
-		newProcess.setWorkflow(wfName);
-		
-		// creating the actionStatus elements from the Workflow's actions
-		List<ActionStatusType> actionStatusList = new LinkedList<ActionStatusType>();
-		for(ActionType action : wf.getAction()) {
-			if( action.isAutomInst() ) {
-				ActionStatusType actionStatus = objFactory.createActionStatusType();
-				
-				actionStatus.setAction(action);
-				actionStatus.setActor(null);			//not yet taken
-				actionStatus.setTakenInCharge(false);	//not yet taken
-				actionStatus.setTerminated(false);	//not yet taken so not yet finished
-				
-				actionStatusList.add(actionStatus);
-			}
-		}
-		// adding the actionStatus elements to the new process
-		newProcess.getActionStatus().addAll(actionStatusList);
-		
-		// each process must have a unique code
-		synchronized (this) {
-			newProcess.setCode("p"+pCode);
-			pCode++;
-		}
-		
-		return "p"+pCode;
-	}
-
 	/**
 	 * This method returns a {@link List} containg all the name of the workflows that are inside the manager.
 	 * @return a {@link List&ltString&gt}
@@ -206,6 +165,48 @@ public class WorkflowDataManager {
 		return workflowMap.get(wfName);
 	}
 	
+	public String createNewProcess(String wfName) throws UnknownWorkflow {
+		Workflow wf = workflowMap.get(wfName);
+		if(wf == null) {
+			String message = "Impossible to create a new process! The specified workflow \""+wfName+"\" does not exists!";
+			
+			ErrorMessage faultInfo = objFactory.createErrorMessage();
+			faultInfo.setMessage(message);
+			throw new UnknownWorkflow(message, faultInfo);
+		}
+		
+		// creating a new process
+		Process newProcess = objFactory.createProcess();
+	
+		newProcess.setStarted(new XMLGregorianCalendarImpl());
+		newProcess.setWorkflow(wfName);
+		
+		// creating the actionStatus elements from the Workflow's actions
+		List<ActionStatusType> actionStatusList = new LinkedList<ActionStatusType>();
+		for(ActionType action : wf.getAction()) {
+			if( action.isAutomInst() ) {
+				ActionStatusType actionStatus = objFactory.createActionStatusType();
+				
+				actionStatus.setAction(action);
+				actionStatus.setActor(null);			//not yet taken
+				actionStatus.setTakenInCharge(false);	//not yet taken
+				actionStatus.setTerminated(false);	//not yet taken so not yet finished
+				
+				actionStatusList.add(actionStatus);
+			}
+		}
+		// adding the actionStatus elements to the new process
+		newProcess.getActionStatus().addAll(actionStatusList);
+		
+		// each process must have a unique code
+		synchronized (this) {
+			newProcess.setCode("p"+pCode);
+			pCode++;
+		}
+		
+		return "p"+pCode;
+	}
+
 	public boolean completeAction(String actionStatusName, String nextActionName) {
 		// TODO Auto-generated method stub
 		return false;
@@ -255,7 +256,7 @@ public class WorkflowDataManager {
 		Workflow wf = objFactory.createWorkflow();
 		wf.setName(wfName);
 		
-		Map<String, ActionType> newActions = new ConcurrentHashMap<String, ActionType>();
+		Map<String, ActionType> newActions = new HashMap<String, ActionType>();
 		// - building all the actions - //
 		for( ActionReader ar : wfr.getActions() ) {
 			ActionType newAct = buildAction(wfName, ar, newActions);
@@ -351,38 +352,39 @@ public class WorkflowDataManager {
 	 * @return
 	 */
 	private Process buildProcess(ProcessReader psr) {
+		// creating a process
+		Process process = objFactory.createProcess();
 		
-		// - Generating XMLGregorianCalendar - //
+		// Taking the relative workflows name //
+		String wfName = psr.getWorkflow().getName();
+		
+		// setting process attributes
+		process.setCode("p"+pCode);
+		process.setWorkflow(wfName);
+		
+		// - Generating and setting the XMLGregorianCalendar - //
 		GregorianCalendar cal = new GregorianCalendar();
 		cal.setTime(psr.getStartTime().getTime());
-		XMLGregorianCalendar startTime = null;
 		try {
-			startTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
-		} catch (DatatypeConfigurationException e) {
+			XMLGregorianCalendar startTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
+			process.setStarted(startTime);
+		}
+		catch (DatatypeConfigurationException e) {
 			System.err.println("Error! There is a problem with the instantiation of the DatatypeFactory");
 			System.err.println(e.getMessage());
 			e.printStackTrace();
-			//startTime = new XMLGregorianCalendarImpl(cal);
 		}
-		
-		// - Taking the relative workflows name - //
-		String wfName = psr.getWorkflow().getName();
-		
-		// creating a process
-		Process process = objFactory.createProcess();
-		// setting its attributes
-		process.setCode("p"+pCode);
-		process.setStarted(startTime);
-		process.setWorkflow(wfName);
 		
 		// - preparing data for the creation of the actions - //
 		Workflow wf = workflowMap.get(wfName);
 		Map<String, ActionType> wfActionsTypeMap = Utility.buildWFActionsMap(wf.getAction());
-		List<ActionStatusType> newActions = new LinkedList<ActionStatusType>();
 		
+		List<ActionStatusType> newActions = new LinkedList<ActionStatusType>();
 		// - For each process taking the inner actions - //
 		for ( ActionStatusReader asr : psr.getStatus() ) {
+			
 			ActionType actType = wfActionsTypeMap.get(asr.getActionName());
+			if(actType == null) System.err.println("DEBUG - Banana!"); //TODO: FIX ME!
 			ActionStatusType as = buildActionStatus(asr, actType);
 			newActions.add(as);
 		}
