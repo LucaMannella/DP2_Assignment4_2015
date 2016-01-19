@@ -125,9 +125,10 @@ public class ConcreteWorkflowMonitor implements WorkflowMonitor {
 			buildWorkflowReaders();
 		
 		Holder<List<Process>> processesHolder = new Holder<List<Process>>();
+		Holder<List<Workflow>> workflowsHolder = new Holder<List<Workflow>>();
 		System.out.println("...Retrieving the processes...");
 		try {
-			proxyReader.getProcesses(wokflowNamesHolder.value, calendarHolder, processesHolder);
+			proxyReader.getProcesses(wokflowNamesHolder.value, calendarHolder, processesHolder, workflowsHolder);
 			lastUpdateTime = calendarHolder.value;
 		} catch (UnknownNames_Exception e) {
 			throw new WorkflowMonitorException("Error retrieving the processes: "+e.getMessage());
@@ -186,6 +187,7 @@ public class ConcreteWorkflowMonitor implements WorkflowMonitor {
 			for(ProcessReader pr : processes)
 				buf.append("\t"+pr.toString()+"\n");
 		}
+		buf.append("\n\n");
 		
 		return buf.toString();
 	}
