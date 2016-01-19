@@ -57,7 +57,7 @@ public class WorkflowDataManager {
 
 	
 	/**
-	 * This method returns a {@link List} containg all the name of the workflows that are inside the manager.
+	 * This method returns a {@link List} containing all the name of the workflows that are inside the manager.
 	 * @return a {@link List&ltString&gt}
 	 */
 	public List<String> getWorkflowNames() {
