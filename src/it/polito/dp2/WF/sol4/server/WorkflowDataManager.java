@@ -32,7 +32,7 @@ import it.polito.dp2.WF.sol4.gen.UnknownNames;
 import it.polito.dp2.WF.sol4.gen.UnknownNames_Exception;
 import it.polito.dp2.WF.sol4.gen.UnknownWorkflow;
 import it.polito.dp2.WF.sol4.gen.Workflow;
-import it.polito.dp2.WF.sol4.util.Utility;
+import it.polito.dp2.WF.sol4.server.util.Utility;
 
 /**
  * This class must be thread safe!
