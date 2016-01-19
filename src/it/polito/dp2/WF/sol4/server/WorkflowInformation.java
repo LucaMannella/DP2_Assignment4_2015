@@ -1,14 +1,11 @@
 package it.polito.dp2.WF.sol4.server;
 
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.Logger;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.Holder;
 
@@ -43,17 +40,8 @@ public class WorkflowInformation implements WorkflowInfoInterface {
 	public void getWorkflowNames(Holder<XMLGregorianCalendar> lastModTime, Holder<List<String>> names) {	//TODO: Check me
 		log.entering(log.getName(), "getWorkflowNames");
 		
+		lastModTime.value = manager.getLastWorkflowsUpdate();
 		names.value = manager.getWorkflowNames();
-		
-		GregorianCalendar cal = manager.getLastWorkflowsUpdate();
-		try {
-			lastModTime.value = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
-		} catch (DatatypeConfigurationException e) {
-			System.err.println("Error! There is a problem with the instantiation of the DatatypeFactory");
-			System.err.println(e.getMessage());
-			e.printStackTrace();
-			//startTime = new XMLGregorianCalendarImpl(cal);
-		}
 		
 		log.exiting(log.getName(), "getWorkflowNames", lastModTime.value.toString());
 	}
@@ -65,16 +53,7 @@ public class WorkflowInformation implements WorkflowInfoInterface {
 			throws UnknownNames_Exception {		//TODO: Check me
 		log.entering(log.getName(), "getWorkflows", wfNames.toString());
 		
-		GregorianCalendar cal = manager.getLastWorkflowsUpdate();
-		try {
-			lastModTime.value = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
-		} catch (DatatypeConfigurationException e) {
-			System.err.println("Error! There is a problem with the instantiation of the DatatypeFactory");
-			System.err.println(e.getMessage());
-			e.printStackTrace();
-			//startTime = new XMLGregorianCalendarImpl(cal);
-		}
-		
+		lastModTime.value = manager.getLastWorkflowsUpdate();
 		workflows.value = manager.getWorkflows(wfNames);
 		
 		log.exiting(log.getName(), "getWorkflows", lastModTime.value.toString());
@@ -82,21 +61,13 @@ public class WorkflowInformation implements WorkflowInfoInterface {
 
 	@WebMethod
 	@Override
-	public void getProcesses(List<String> wfNames,																			//input parameters
+	public void getProcesses(List<String> wfNames,						//input parameters
 			Holder<XMLGregorianCalendar> lastModTime, Holder<List<Process>> processes, Holder<List<Workflow>> workflows)	//output parameters
-			throws UnknownNames_Exception {																					//fault message
+			throws UnknownNames_Exception {								//fault message
 		
 		log.entering(log.getName(), "getProcesses", wfNames.toString());
 		
-		GregorianCalendar cal = manager.getLastProcessesUpdate();
-		try {
-			lastModTime.value = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
-		} catch (DatatypeConfigurationException e) {
-			System.err.println("Error! There is a problem with the instantiation of the DatatypeFactory");
-			System.err.println(e.getMessage());
-			e.printStackTrace();
-			//startTime = new XMLGregorianCalendarImpl(cal);
-		}
+		lastModTime.value = manager.getLastProcessesUpdate();
 		
 		workflows.value = manager.getWorkflows(wfNames);
 		processes.value = manager.getProcesses(wfNames);
