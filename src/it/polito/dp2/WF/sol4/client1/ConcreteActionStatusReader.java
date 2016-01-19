@@ -26,8 +26,8 @@ public class ConcreteActionStatusReader implements ActionStatusReader, Comparabl
 	public ConcreteActionStatusReader(ActionStatusType action, String workflowName) {
 //TODO:	if((action == null) return;	//safety lock
 		String actorRole = null;
-		Object o = action.getAction();	//TODO: debug purpose
-		if( o instanceof ActionType ) {
+		
+		if( action.getAction() instanceof ActionType ) {
 			ActionType azione = (ActionType) action.getAction();
 			
 			// retrieving the action name
