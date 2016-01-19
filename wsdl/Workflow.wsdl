@@ -67,6 +67,7 @@
 				<xsd:sequence>
 					<xsd:element name="lastModTime" type="xsd:dateTime" />
 					<xsd:element ref="wf:process" minOccurs="0" maxOccurs="unbounded" />
+					<xsd:element ref="wf:workflow" minOccurs="1" maxOccurs="unbounded" />
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:element>
@@ -183,7 +184,7 @@
 		<wsdl:part name="returnValues" element="wfm:getWorkflowsResponse"/>
 	</wsdl:message>
 
-	<wsdl:message name="getProcesses">
+	<wsdl:message name="getProcessesRequest">
 		<wsdl:part name="parameters" element="wfm:getProcesses"/>
 	</wsdl:message>
 	<wsdl:message name="getProcessesResponse">
@@ -250,7 +251,7 @@
 			<wsdl:documentation>
 				Returns the details of the Workflows whose names are passed as argument.
 				If the argument is null, the informations about all the workflows are returned.
-				If the name of the workflow is not recognized a fault message will be returned.
+				If the name of one workflow is not recognized a fault message will be returned.
 			</wsdl:documentation>
     		<wsdl:input message="wfm:getWorkflows"/>
     		<wsdl:output message="wfm:getWorkflowsResponse"/>
@@ -260,10 +261,11 @@
 		<wsdl:operation name="getProcesses">
 			<wsdl:documentation>
 				Returns the details of the Processes related to the name of the Workflows that are passed as argument.
+				The operation will return also the related workflows, this is necessary 
 				If the argument is null, the informations about all the Processes are returned.
-				If the name of the workflow is not recognized a fault message will be returned.
+				If the name of one workflow is not recognized a fault message will be returned.
 			</wsdl:documentation>
-			<wsdl:input message="wfm:getProcesses"/>
+			<wsdl:input message="wfm:getProcessesRequest"/>
 			<wsdl:output message="wfm:getProcessesResponse"/>
             <wsdl:fault name="UnknownNames" message="wfm:UnknownNames"/>
         </wsdl:operation>
