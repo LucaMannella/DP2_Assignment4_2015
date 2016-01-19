@@ -64,10 +64,15 @@ public class ConcreteWorkflowMonitor implements WorkflowMonitor {
 		
 		// building the maps
 		System.out.println("...Building the WorkflowMonitor...");
+		
 		buildWorkflowReaders();
-		System.out.println(workflows.size()+" workflows were created.");
+		System.out.println(workflows.size()+" workflows were downloaded.");
+
 		buildProcessReaders();
-		System.out.println(processes.size()+" processes were created.");
+		System.out.println(processes.size()+" processes were downloaded.");
+		
+		//after the processes
+		System.out.println(this.toString());
 	}
 	
 	/**
@@ -128,11 +133,21 @@ public class ConcreteWorkflowMonitor implements WorkflowMonitor {
 			throw new WorkflowMonitorException("Error retrieving the processes: "+e.getMessage());
 		}
 		
-		// build the ProcessReader Map
+		// build the ProcessReader Map		//TODO: try to check here!
 		for( Process p : processesHolder.value ) {
 			WorkflowReader wfr = workflows.get(p.getWorkflow());
 			ProcessReader pr = new ConcreteProcessReader(p, wfr);
 			processes.add(pr);
+			
+			// set the process inside the list of the belonging workflow
+			WorkflowReader wf = workflows.get(p.getWorkflow());
+			if(wf instanceof ConcreteWorkflowReader) {
+				if (((ConcreteWorkflowReader)wf).setProcesses(pr) == false )
+					System.err.println("Error! Impossible to insert the ProcessReader <"+p.getCode()+">"
+							+ "in the workflow <"+wf.getName()+">\n");
+			}
+			else
+				System.err.println("The workflow "+wf.getName()+" is not a ConcreteWFReader!");
 		}
 	}
 
@@ -155,17 +170,19 @@ public class ConcreteWorkflowMonitor implements WorkflowMonitor {
 	public String toString(){
 		StringBuffer buf = new StringBuffer("Inside this WorkflowMonitor there are:\n");
 		
+		buf.append("--- Workflows ---\n");
 		if((workflows==null) || (workflows.isEmpty()))
 			buf.append("\tNo Workflows\n");
 		else {
 			for(WorkflowReader wfr : workflows.values())
-				buf.append("\t"+wfr.toString()+"\n");
+				buf.append(wfr.toString()+"\n");
 		}
+		buf.append("\n");
 		
+		buf.append("--- Processes ---\n");
 		if((processes==null) || (processes.isEmpty()))
 			buf.append("\tNo Processes\n");
 		else {
-			buf.append("Processes:\n");
 			for(ProcessReader pr : processes)
 				buf.append("\t"+pr.toString()+"\n");
 		}
