@@ -13,11 +13,30 @@
 	<property name="WSDLpath" location="${basedir}/wsdl/Workflow.wsdl" />
 
 	<property name="package" value="it.polito.dp2.WF.sol4.gen"/>
-	<property name="custom.option" value=""/>
 	
 	<property name="debug" value="true" />
 	<property name="debugLevel" value="source,lines,vars" />
 	<property name="javaVersion" value="1.7" />
+	
+<!-- customization -->	
+	<!-- <property name="custom.option" value=""/> -->
+	<property name="custom.file" location="${baseDir}/custom/bindings.xml" />
+	
+	<!-- Target chk-custom	-->
+	<target name="chk-custom">
+		<available property="customization.file.exists" file="${custom.file}"/>
+	</target>
+	
+	<!-- Target set-custom-option	-->
+	<target name="set-custom-option" depends="chk-custom, reset-custom-option" if="customization.file.exists">
+		<property name="custom.option" value="-b ${custom.file}" />
+	</target>
+	
+	<!-- Target reset-custom-option	-->
+	<target name="reset-custom-option" depends="chk-custom" unless="customization.file.exists">
+		<property name="custom.option" value="" />
+	</target>
+<!-- end of customization -->	
 	
 	<!-- Init !-->
 	<target name="init">
@@ -34,7 +53,7 @@
 	</target>
 	
 	<!-- Artifacts Generation !-->
-	<target name="compile-wsdl" depends="init" description="Compile WSDL and generate bindings">
+	<target name="compile-wsdl" depends="init, set-custom-option" description="Compile WSDL and generate bindings">
 	    <echo> Wsdl location --> "${WSDLpath}" </echo>
 	    <exec executable="wsimport">
 	        <arg line="${custom.option} -d '${buildDir}' -p '${package}' -s '${genDir}' -keep ${WSDLpath}"/>
@@ -47,8 +66,9 @@
 		<javac destdir="${buildDir}" debug="${debug}" debuglevel="${debugLevel}" source="${javaVersion}" target="${javaVersion}" includeantruntime="false">
 			<src path="${srcDir}"/>
 			<src path="${genDir}"/>
-			<include name="it/polito/dp2/WF/sol4/server/util/*.java" />
+			<include name="it/polito/dp2/WF/sol4/server/**" />
 			<include name="it/polito/dp2/WF/sol4/server/*.java" />
+			<!-- <include name="it/polito/dp2/WF/lab4/*.java" /> ??? -->
 			<classpath>
 				<path refid="sol.classpath" />
 			</classpath>
@@ -56,16 +76,19 @@
 		<echo>Done.</echo>
 	</target>
 	
-	<!-- Client Building !-->
+	<!-- Clients Building !-->
 	<target name="build-client" depends="init, compile-wsdl" >
 		<echo> Building the clients... </echo>
 		<javac destdir="${buildDir}" debug="${debug}" debuglevel="${debugLevel}" source="${javaVersion}" target="${javaVersion}" includeantruntime="false">
 			<src path="${srcDir}"/>
 			<src path="${genDir}"/>
+			<include name="it/polito/dp2/WF/sol4/client1/**" />
 			<include name="it/polito/dp2/WF/sol4/client1/*.java" />
+			<include name="it/polito/dp2/WF/sol4/client2/**" />
 			<include name="it/polito/dp2/WF/sol4/client2/*.java" />
+			<include name="it/polito/dp2/WF/sol4/client3/**" />
 			<include name="it/polito/dp2/WF/sol4/client3/*.java" />
-			<include name="it/polito/dp2/WF/lab4/*.java" />
+			<include name="it/polito/dp2/WF/lab4/*.java" />	<!-- ??? -->
 			<classpath>
 				<path refid="sol.classpath" />
 			</classpath>
@@ -76,6 +99,7 @@
 	<!-- The classpath to be used for compilation of the solution -->
 	<path id="sol.classpath">
 		<pathelement location="${libDir}/WF.jar"/>
+		<!-- aggiungere librerie qui -->
 	</path>
 	
 	<!-- Client & Server Building !-->
