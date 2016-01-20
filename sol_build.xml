@@ -47,7 +47,7 @@
 		<javac destdir="${buildDir}" debug="${debug}" debuglevel="${debugLevel}" source="${javaVersion}" target="${javaVersion}" includeantruntime="false">
 			<src path="${srcDir}"/>
 			<src path="${genDir}"/>
-			<include name="it/polito/dp2/WF/sol4/util/*.java" />
+			<include name="it/polito/dp2/WF/sol4/server/util/*.java" />
 			<include name="it/polito/dp2/WF/sol4/server/*.java" />
 			<classpath>
 				<path refid="sol.classpath" />
@@ -59,11 +59,13 @@
 	<!-- Client Building !-->
 	<target name="build-client" depends="init, compile-wsdl" >
 		<echo> Building the clients... </echo>
-		<javac destdir="${buildDir}" debug="${debug}" debuglevel="${debuglevel}" source="${javaVersion}" target="${javaVersion}" includeantruntime="false">
+		<javac destdir="${buildDir}" debug="${debug}" debuglevel="${debugLevel}" source="${javaVersion}" target="${javaVersion}" includeantruntime="false">
 			<src path="${srcDir}"/>
 			<src path="${genDir}"/>
 			<include name="it/polito/dp2/WF/sol4/client1/*.java" />
 			<include name="it/polito/dp2/WF/sol4/client2/*.java" />
+			<include name="it/polito/dp2/WF/sol4/client3/*.java" />
+			<include name="it/polito/dp2/WF/lab4/*.java" />
 			<classpath>
 				<path refid="sol.classpath" />
 			</classpath>
