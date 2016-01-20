@@ -30,7 +30,7 @@ public class WFTakeOverClientImpl implements WFTakeOverClient {
 	}
 
 	@Override
-	public boolean takeOver(String arg0, String arg1, String arg2) 
+	public boolean takeOver(String workflowName, String actionName,	String actorName) 
 			throws ServiceUnavailableException {
 		
 		boolean toRet = false;
@@ -47,15 +47,15 @@ public class WFTakeOverClientImpl implements WFTakeOverClient {
 			WorkflowControllerInterface proxyController = service.getWorkflowControllerPort();
 			
 			List<String> wfNames = new LinkedList<String>();
-			wfNames.add(arg0);
+			wfNames.add(workflowName);
 			Holder<XMLGregorianCalendar> lastModTime = new Holder<XMLGregorianCalendar>();
 			Holder<List<Workflow>> workflows = new Holder<List<Workflow>>();
 			Holder<List<it.polito.dp2.WF.sol4.gen.Process>> processes = new Holder<List<it.polito.dp2.WF.sol4.gen.Process>>();
 			proxyReader.getProcesses(wfNames, lastModTime, processes, workflows);
 			
 			Actor actor = new Actor();
-			actor.setName(arg1);
-			actor.setRole(arg2);
+			actor.setName(actorName);
+//			actor.setRole(arg2);
 			
 			for( it.polito.dp2.WF.sol4.gen.Process p : processes.value ) {
 				String psCode = p.getCode();
@@ -93,6 +93,7 @@ public class WFTakeOverClientImpl implements WFTakeOverClient {
 			System.err.println("Impossible to take over the action!");
 		}
 		return toRet;
+
 	}
-	
+
 }
