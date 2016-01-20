@@ -89,39 +89,39 @@ public class WFTests {
 	
     @Test
     public final void testGetWorkflows() {
-    		// call getWorkflows on the two implementations
-			Set<WorkflowReader> rs = referenceWorkflowMonitor.getWorkflows();
-			Set<WorkflowReader> ts = testWorkflowMonitor.getWorkflows();
-			
-			// if one of the two calls returned null while the other didn't return null, the test fails
-	        if ((rs == null) && (ts != null) || (rs != null) && (ts == null)) {
-	            fail("getWorkflows returns null when it should return non-null or vice versa");
-	            return;
-	        }
+		// call getWorkflows on the two implementations
+		Set<WorkflowReader> rs = referenceWorkflowMonitor.getWorkflows();
+		Set<WorkflowReader> ts = testWorkflowMonitor.getWorkflows();
+		
+		// if one of the two calls returned null while the other didn't return null, the test fails
+        if ((rs == null) && (ts != null) || (rs != null) && (ts == null)) {
+            fail("getWorkflows returns null when it should return non-null or vice versa");
+            return;
+        }
 
-	        // if both calls returned null, there are no workflows, and the test passes
-	        if ((rs == null) && (ts == null)) {
-	            assertTrue("There are no Workflows!", true);
-	            return;
-	        }
-	        
-	        // check that the number of workflows matches
-	        assertEquals("Wrong Number of Workflows", rs.size(), ts.size());
-	        
-	        // create treesets of workflows, using the comparator for sorting, one for reference and one for impl. under test 
-	        TreeSet<WorkflowReader> rts = new TreeSet<WorkflowReader>(new WorkflowReaderComparator());
-	        TreeSet<WorkflowReader> tts = new TreeSet<WorkflowReader>(new WorkflowReaderComparator());
-	    
-	        rts.addAll(rs);
-	        tts.addAll(ts);
-	        
-	        // check that all workflows match one by one
-	        Iterator<WorkflowReader> ri = rts.iterator();
-	        Iterator<WorkflowReader> ti = tts.iterator();
+        // if both calls returned null, there are no workflows, and the test passes
+        if ((rs == null) && (ts == null)) {
+            assertTrue("There are no Workflows!", true);
+            return;
+        }
+        
+        // check that the number of workflows matches
+        assertEquals("Wrong Number of Workflows", rs.size(), ts.size());
+        
+        // create treesets of workflows, using the comparator for sorting, one for reference and one for impl. under test 
+        TreeSet<WorkflowReader> rts = new TreeSet<WorkflowReader>(new WorkflowReaderComparator());
+        TreeSet<WorkflowReader> tts = new TreeSet<WorkflowReader>(new WorkflowReaderComparator());
+    
+        rts.addAll(rs);
+        tts.addAll(ts);
+        
+        // check that all workflows match one by one
+        Iterator<WorkflowReader> ri = rts.iterator();
+        Iterator<WorkflowReader> ti = tts.iterator();
 
-	        while (ri.hasNext() && ti.hasNext()) {
-	        	compareWorkflowReader(ri.next(),ti.next());
-	        }
+        while (ri.hasNext() && ti.hasNext()) {
+        	compareWorkflowReader(ri.next(),ti.next());
+        }
     }
 
     // private method for comparing two non-null WorkflowReader objects
