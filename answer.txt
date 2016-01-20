@@ -5,7 +5,21 @@ the marshal operation. Then explain the meaning of each line.
 Answer 1)
 
 This is the method that perform the marshalling: 
-	private void marshallDocument(WorkflowManager root, PrintStream outputFile) throws JAXBException {
+	private void marshallDocument(WorkflowManager root, PrintStream outputFile) throws JAXBException, SAXException, IllegalArgumentException {
+		/* - Creating an instance of the XML Schema - */
+		Schema schema;
+		try {
+			schema = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI).newSchema(new File(XSD_NAME));
+		}
+		catch(IllegalArgumentException e) {
+			System.err.println("Error! No implementation of the schema language is available");
+			throw e;
+		}
+		catch(NullPointerException e) {
+			System.err.println("Error! The instance of the schema or the file of the schema is not well created!\n");
+			throw new SAXException("The schema file is null!");
+		}
+		
 		/* - Creating the XML document - */			
 		Marshaller m = jc.createMarshaller();
 		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -18,15 +32,17 @@ The root is an instance of the class WorkflowManager and it represents the root 
 it contains all the elements of the XML document.
 The PrintStream outputFile is the stream on which will be written the XML document.
 
+The try-catch block is related to the creation of an instance of the XML Schema that will be used to validate the output file.
+If something wrong happens an exception will be thrown and the marshalling will be interrupted.
 The object JAXBContext jc was instantiated previously and it is an entry point for the JAXB API.
 From the jc element will be taken the Marshaller m, an object that is able to marshall the object root into an XML file.
 To this marshaller will be set two property: the JAXB_FORMATTED_OUTPUT and the JAXB_SCHEMA_LOCATION.
 The first one allows to the marshal to create a more readable document,
 the second one is used to specify the xsi:schemaLocation attribute in the marshalled XML.
-The setSchema method (with a previous created Schema object as parameter) will enable the validation
+The setSchema method will set the Schema object previously created and it will enable the validation.
 operation, in this way we will be sure that the created document will be valid.
 
-Finally the mashal operation will create the XML file.
+Finally the marshal operation will create the XML file.
 If it is not possible to create the Marshaller or the XML output file a JAXBException will be throwned.
  
 - Question 2)
@@ -52,6 +68,6 @@ This is a simplified version of the part that take care of that:
 		}
 	}
 I'm looking if an action was already taken in charge; if I found an action that could be ok I take the lock.
-After that I check again if the action was really alredy taken or not (usefull if I'm not the first to enter in this block).
+After that I check again if the action was really already taken or not (useful if I'm not the first to enter in this block).
 If not, the actor will take the action and the execution of the method is stopped.
 Otherwise the loop will continue (maybe there is another good action).
