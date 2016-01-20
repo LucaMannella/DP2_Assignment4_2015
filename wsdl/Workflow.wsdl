@@ -6,7 +6,7 @@
 				xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" >
 	<wsdl:documentation>
     	Service: WorkflowService
-    	Version: 3.0
+    	Version: 4.0
     	Owner: Luca Mannella
     </wsdl:documentation>
   			
@@ -18,16 +18,18 @@
 		<xsd:element name="UnknownNames" type="wfm:UnknownNames" />
 		<xsd:element name="UnknownCode" type="wfm:ErrorMessage" />
 		<xsd:element name="UnknownWorkflow" type="wfm:ErrorMessage"/>
-		<xsd:element name="UnknownActorName" type="wfm:ErrorMessage" />
+		<xsd:element name="WrongActor" type="wfm:ErrorMessage" />
 		<xsd:element name="UnknownActionName" type="wfm:ErrorMessage" />
 		<xsd:element name="UnknownNextActionName" type="wfm:ErrorMessage" />
+		
+		<xsd:element name="ActionAlreadyTaken" type="wfm:ActionAlreadyTaken" />
+		<xsd:element name="ActionAlreadyFinished" type="wfm:ActionAlreadyFinished" />
 					
 		<xsd:element name="getWorkflowNames">
 			<xsd:complexType>
 				<xsd:sequence />
 			</xsd:complexType>
 		</xsd:element>		
-		
 		<xsd:element name="getWorkflowNamesResponse">
 			<xsd:complexType>
 				<xsd:sequence>
@@ -44,7 +46,6 @@
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:element>
-		
 		<xsd:element name="getWorkflowsResponse">
 			<xsd:complexType>
 				<xsd:sequence>
@@ -61,7 +62,6 @@
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:element>
-		
 		<xsd:element name="getProcessesResponse">
 			<xsd:complexType>
 				<xsd:sequence>
@@ -80,7 +80,6 @@
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:element>
-		
 		<xsd:element name="createNewProcessResponse">
 			<xsd:complexType>
 				<xsd:sequence>
@@ -97,7 +96,6 @@
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:element>
-		
 		<xsd:element name="getActionsResponse">
 			<xsd:complexType>
 				<xsd:sequence>
@@ -114,7 +112,6 @@
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:element>
-		
 		<xsd:element name="takeOverActionResponse">
 			<xsd:complexType>
 				<xsd:sequence>
@@ -131,7 +128,6 @@
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:element>
-		
 		<xsd:element name="completeActionResponse">
 			<xsd:complexType>
 				<xsd:sequence>
@@ -147,9 +143,23 @@
 				<xsd:element name="message" type="xsd:string" minOccurs="0" />
 			</xsd:sequence>
 		</xsd:complexType>
-
+		
 		<xsd:complexType name="ErrorMessage">
 			<xsd:sequence>
+				<xsd:element name="message" type="xsd:string" minOccurs="0" />
+			</xsd:sequence>
+		</xsd:complexType>
+		
+		<xsd:complexType name="ActionAlreadyTaken">
+			<xsd:sequence>
+				<xsd:element name="ActorName" type="xsd:string" />
+				<xsd:element name="message" type="xsd:string" minOccurs="0" />
+			</xsd:sequence>
+		</xsd:complexType>
+		
+		<xsd:complexType name="ActionAlreadyFinished">
+			<xsd:sequence>
+				<xsd:element name="ActorName" type="xsd:string" />
 				<xsd:element name="message" type="xsd:string" minOccurs="0" />
 			</xsd:sequence>
 		</xsd:complexType>
@@ -160,14 +170,8 @@
 				<xsd:pattern value="[a-zA-Z][a-zA-Z0-9]*" />
 			</xsd:restriction>
 		</xsd:simpleType>
-		
-		<xsd:simpleType name="Role">	<!-- Not more used -->
-			<xsd:restriction base="xsd:string">
-				<xsd:pattern value="[a-zA-Z ]*" />
-			</xsd:restriction>
-		</xsd:simpleType>
 
-	</xsd:schema>
+    </xsd:schema>
 	</wsdl:types>	
 
 	
@@ -225,14 +229,21 @@
 	<wsdl:message name="UnknownWorkflow">
 		<wsdl:part name="fault" element="wfm:UnknownWorkflow"/>
 	</wsdl:message>
-	<wsdl:message name="UnknownActorName">
-		<wsdl:part name="fault" element="wfm:UnknownActorName"/>
+	<wsdl:message name="WrongActor">
+		<wsdl:part name="fault" element="wfm:WrongActor"/>
 	</wsdl:message>
 	<wsdl:message name="UnknownActionName">
-		<wsdl:part name="parameters" element="wfm:UnknownActionName"/>
+		<wsdl:part name="fault" element="wfm:UnknownActionName"/>
 	</wsdl:message>
 	<wsdl:message name="UnknownNextActionName">
-		<wsdl:part name="parameters" element="wfm:UnknownNextActionName"/>
+		<wsdl:part name="fault" element="wfm:UnknownNextActionName"/>
+	</wsdl:message>
+	
+	<wsdl:message name="ActionAlreadyTaken">
+		<wsdl:part name="fault" element="wfm:ActionAlreadyTaken" />
+	</wsdl:message>
+	<wsdl:message name="ActionAlreadyFinished">
+		<wsdl:part name="fault" element="wfm:ActionAlreadyFinished"/>
 	</wsdl:message>
 	
 	
@@ -301,31 +312,35 @@
 			<wsdl:documentation>
 				This operation allows to an Actor to take charge of an instantiated action.
 				If the code of the process or the name of the actor are not recognized a fault message will be returned.
+				If the action was already taken by another actor a fault will be returned.
 			</wsdl:documentation>
 			<wsdl:input message="wfm:takeOverAction"/>
 			<wsdl:output message="wfm:takeOverActionResponse"/>
             <wsdl:fault name="faultCode" message="wfm:UnknownCode"/>
-            <wsdl:fault name="faultActorName" message="wfm:UnknownActorName"/>
+            <wsdl:fault name="faultActor" message="wfm:WrongActor"/>
+            <wsdl:fault name="faultActionTaken" message="wfm:ActionAlreadyTaken" />
         </wsdl:operation>
 		
 		<wsdl:operation name="completeAction">
 			<wsdl:documentation>
 				This operation allows the actor who had taken over the action to complete it.
 				If the name of the action or the name of the next action are not recognized a fault message will be returned.
+				If the action will be already finished a fault will be returned.
 			</wsdl:documentation>
 			<wsdl:input message="wfm:completeAction"/>
 			<wsdl:output message="wfm:completeActionResponse"/>
             <wsdl:fault name="faultActionName" message="wfm:UnknownActionName"/>
             <wsdl:fault name="faultNextActionName" message="wfm:UnknownNextActionName"/>
+            <wsdl:fault name="faultActionFinished" message="wfm:ActionAlreadyFinished" />
         </wsdl:operation>
 	</wsdl:portType>
 	
 	
 	<wsdl:binding name="WorkflowInfoPortBinding" type="wfm:WorkflowInfoInterface">
 		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
-
+		
 		<wsdl:operation name="getWorkflowNames">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="" />	<!-- "http://lucamannella.altervista.org/WorkflowManager/completeAction" -->
 			<wsdl:input>
 				<soap:body use="literal" />
 			</wsdl:input>
@@ -343,42 +358,12 @@
 				<soap:body use="literal" />
 			</wsdl:output>
 			<wsdl:fault name="UnknownNames">
-				<soap:fault name="UnknownNames" use="literal" />
+				<soap:fault use="literal" name="UnknownNames" />
 			</wsdl:fault>
 		</wsdl:operation>
 
 		<wsdl:operation name="getProcesses">
-			<soap:operation soapAction="" />	<!-- http://lucamannella.altervista.org/WorkflowManager/getProcesses !-->
-			<wsdl:input>
-				<soap:body use="literal" />
-			</wsdl:input>
-			<wsdl:output>
-				<soap:body use="literal" />
-			</wsdl:output>
-			<wsdl:fault name="UnknownNames">
-				<soap:fault name="UnknownNames" use="literal" />
-			</wsdl:fault>
-		</wsdl:operation>
-		
-		<wsdl:operation name="getActions">
-			<soap:operation soapAction="" />	<!-- "http://lucamannella.altervista.org/WorkflowManager/getActions" !-->
-			<wsdl:input>
-				<soap:body use="literal" />
-			</wsdl:input>
-			<wsdl:output>
-				<soap:body use="literal" />
-			</wsdl:output>
-			<wsdl:fault name="UnknownCode">
-				<soap:fault name="UnknownCode" use="literal" />
-			</wsdl:fault>
-		</wsdl:operation>
-	</wsdl:binding>
-
-	<wsdl:binding name="WorkflowControllerPortBinding" type="wfm:WorkflowControllerInterface">
-		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
-
-		<wsdl:operation name="createNewProcess">
-			<soap:operation soapAction="" />	<!-- http://lucamannella.altervista.org/WorkflowManager/createNewProcess !-->
+			<soap:operation	soapAction="" />	<!-- http://lucamannella.altervista.org/WorkflowManager/getProcesses !-->
 			<wsdl:input>
 				<soap:body use="literal" />
 			</wsdl:input>
@@ -389,9 +374,39 @@
 				<soap:fault use="literal" name="UnknownNames" />
 			</wsdl:fault>
 		</wsdl:operation>
+
+		<wsdl:operation name="getActions">
+			<soap:operation soapAction="" />	<!-- "http://lucamannella.altervista.org/WorkflowManager/getActions" !-->
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="UnknownCode">
+				<soap:fault use="literal" name="UnknownCode" />
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+
+	<wsdl:binding name="WorkflowControllerPortBinding" type="wfm:WorkflowControllerInterface">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
 		
+		<wsdl:operation name="createNewProcess">
+			<soap:operation	soapAction="" />	<!-- http://lucamannella.altervista.org/WorkflowManager/createNewProcess !-->
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="UnknownNames">
+				<soap:fault use="literal" name="UnknownNames" />
+			</wsdl:fault>
+		</wsdl:operation>
+
 		<wsdl:operation name="takeOverAction">
-			<soap:operation soapAction="" />	<!-- http://lucamannella.altervista.org/WorkflowManager/takeOverAction -->
+			<soap:operation	soapAction="" />	<!-- http://lucamannella.altervista.org/WorkflowManager/takeOverAction -->
 			<wsdl:input>
 				<soap:body use="literal" />
 			</wsdl:input>
@@ -399,15 +414,18 @@
 				<soap:body use="literal" />
 			</wsdl:output>
 			<wsdl:fault name="faultCode">
-				<soap:fault name="faultCode" use="literal" />
+				<soap:fault use="literal" name="faultCode" />
 			</wsdl:fault>
-			<wsdl:fault name="faultActorName">
-				<soap:fault name="faultActorName" use="literal" />
+			<wsdl:fault name="faultActor">
+				<soap:fault use="literal" name="faultActor" />
+			</wsdl:fault>
+			<wsdl:fault name="faultActionTaken">
+				<soap:fault use="literal" name="faultActionTaken" />
 			</wsdl:fault>
 		</wsdl:operation>
 
 		<wsdl:operation name="completeAction">
-			<soap:operation soapAction="" />	<!-- "http://lucamannella.altervista.org/WorkflowManager/completeAction" -->
+			<soap:operation	soapAction="" />	<!-- "http://lucamannella.altervista.org/WorkflowManager/completeAction" -->
 			<wsdl:input>
 				<soap:body use="literal" />
 			</wsdl:input>
@@ -415,10 +433,13 @@
 				<soap:body use="literal" />
 			</wsdl:output>
 			<wsdl:fault name="faultActionName">
-				<soap:fault name="faultActionName" use="literal" />
+				<soap:fault use="literal" name="faultActionName" />
 			</wsdl:fault>
 			<wsdl:fault name="faultNextActionName">
-				<soap:fault name="faultNextActionName" use="literal" />
+				<soap:fault use="literal" name="faultNextActionName" />
+			</wsdl:fault>
+			<wsdl:fault name="faultActionFinished">
+				<soap:fault use="literal" name="faultActionFinished" />
 			</wsdl:fault>
 		</wsdl:operation>
 	</wsdl:binding>
