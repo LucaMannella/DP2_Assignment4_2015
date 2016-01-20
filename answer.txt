@@ -1,0 +1,57 @@
+- Question 1)
+Write the lines of code of your serializer of Assignment 2 where you perform 
+the marshal operation. Then explain the meaning of each line.
+
+Answer 1)
+
+This is the method that perform the marshalling: 
+	private void marshallDocument(WorkflowManager root, PrintStream outputFile) throws JAXBException {
+		/* - Creating the XML document - */			
+		Marshaller m = jc.createMarshaller();
+		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		m.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, XSD_LOCATION+" "+XSD_NAME);
+		m.setSchema(schema);
+		m.marshal(root, outputFile);
+	}
+This method is called in the Main of the class WFInfoSerializer after the creation of the root.
+The root is an instance of the class WorkflowManager and it represents the root of the XML document,
+it contains all the elements of the XML document.
+The PrintStream outputFile is the stream on which will be written the XML document.
+
+The object JAXBContext jc was instantiated previously and it is an entry point for the JAXB API.
+From the jc element will be taken the Marshaller m, an object that is able to marshall the object root into an XML file.
+To this marshaller will be set two property: the JAXB_FORMATTED_OUTPUT and the JAXB_SCHEMA_LOCATION.
+The first one allows to the marshal to create a more readable document,
+the second one is used to specify the xsi:schemaLocation attribute in the marshalled XML.
+The setSchema method (with a previous created Schema object as parameter) will enable the validation
+operation, in this way we will be sure that the created document will be valid.
+
+Finally the mashal operation will create the XML file.
+If it is not possible to create the Marshaller or the XML output file a JAXBException will be throwned.
+ 
+- Question 2)
+Explain how in the code of your server you avoid that two clients that are 
+performing the take over operation concurrently on the same action succeed both.
+
+Answer 2)
+
+This is a simplified version of the part that take care of that:
+	for( ActionStatusType as : p.getActionStatus()) {
+		toRet = false;
+		if(as.isTakenInCharge() == false) {
+			synchronized (azione) {
+				if(as.isTakenInCharge() == false) {
+					as.setActor(actor.getName());
+					as.setTakenInCharge(true);
+					as.setTimestamp( createXMLGregCalendar() );
+					toRet = true;
+				}
+				if(toRet == true)
+					return true;
+			}
+		}
+	}
+I'm looking if an action was already taken in charge; if I found an action that could be ok I take the lock.
+After that I check again if the action was really alredy taken or not (usefull if I'm not the first to enter in this block).
+If not, the actor will take the action and the execution of the method is stopped.
+Otherwise the loop will continue (maybe there is another good action).
