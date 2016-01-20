@@ -6,14 +6,16 @@ import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
+import it.polito.dp2.WF.sol4.gen.ActionAlreadyFinished_Exception;
+import it.polito.dp2.WF.sol4.gen.ActionAlreadyTaken_Exception;
 import it.polito.dp2.WF.sol4.gen.Actor;
 import it.polito.dp2.WF.sol4.gen.ObjectFactory;
 import it.polito.dp2.WF.sol4.gen.UnknownActionName;
-import it.polito.dp2.WF.sol4.gen.UnknownActorName;
 import it.polito.dp2.WF.sol4.gen.UnknownCode;
 import it.polito.dp2.WF.sol4.gen.UnknownNextActionName;
 import it.polito.dp2.WF.sol4.gen.UnknownWorkflow;
 import it.polito.dp2.WF.sol4.gen.WorkflowControllerInterface;
+import it.polito.dp2.WF.sol4.gen.WrongActor;
 
 @WebService(name = "WorkflowControllerInterface", 
 			targetNamespace = "http://lucamannella.altervista.org/WorkflowManager/",
@@ -24,18 +26,16 @@ import it.polito.dp2.WF.sol4.gen.WorkflowControllerInterface;
 public class WorkflowController implements WorkflowControllerInterface {
 	
 	private WorkflowDataManager manager;
-	private ObjectFactory objFactory;
 	
 	private static Logger log = Logger.getLogger(WorkflowController.class.getName());
 	
 	public WorkflowController(WorkflowDataManager wfManager) {		
 		this.manager = wfManager;
-		this.objFactory = new ObjectFactory();
 	}
 
 	@WebMethod
 	@Override
-	public String createNewProcess (String wfName) throws UnknownWorkflow{		//TODO: Implement me
+	public String createNewProcess (String wfName) throws UnknownWorkflow {
 		log.entering(log.getName(), "createNewProcess");
 		
 		String psCode = manager.createNewProcess(wfName);
@@ -47,19 +47,21 @@ public class WorkflowController implements WorkflowControllerInterface {
 	@WebMethod
 	@Override
 	public boolean takeOverAction(String psCode, Actor actor)
-			throws UnknownActorName, UnknownCode {
+			throws WrongActor, UnknownCode, ActionAlreadyTaken_Exception {
 		log.entering(log.getName(), "takeOverAction");
 		
-		// ---	This method is not required by the specifications.	--- //
+		// ---	This method is not required by the Assignment 4	--- //
+		// ---	It is required in the exam example				--- //
+		boolean toRet = manager.takeOverAction(psCode, actor);
 		
 		log.exiting(log.getName(), "takeOverAction");
-		return false;
+		return toRet;
 	}
 
 	@WebMethod
 	@Override
 	public boolean completeAction(String actionStatusName, String nextActionName)
-			throws UnknownActionName, UnknownNextActionName {
+			throws UnknownActionName, UnknownNextActionName, ActionAlreadyFinished_Exception {
 		log.entering(log.getName(), "completeAction");
 		
 		// ---	This method is not required by the specifications.	--- //
