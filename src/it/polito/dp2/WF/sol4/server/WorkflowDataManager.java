@@ -22,19 +22,24 @@ import it.polito.dp2.WF.ProcessReader;
 import it.polito.dp2.WF.SimpleActionReader;
 import it.polito.dp2.WF.WorkflowMonitor;
 import it.polito.dp2.WF.WorkflowReader;
+import it.polito.dp2.WF.sol4.gen.ActionAlreadyTaken_Exception;
 import it.polito.dp2.WF.sol4.gen.ActionStatusType;
 import it.polito.dp2.WF.sol4.gen.ActionType;
 import it.polito.dp2.WF.sol4.gen.ActionType.SimpleAction;
+import it.polito.dp2.WF.sol4.gen.Actor;
 import it.polito.dp2.WF.sol4.gen.ErrorMessage;
 import it.polito.dp2.WF.sol4.gen.ObjectFactory;
 import it.polito.dp2.WF.sol4.gen.Process;
+import it.polito.dp2.WF.sol4.gen.UnknownCode;
 import it.polito.dp2.WF.sol4.gen.UnknownNames;
 import it.polito.dp2.WF.sol4.gen.UnknownNames_Exception;
 import it.polito.dp2.WF.sol4.gen.UnknownWorkflow;
 import it.polito.dp2.WF.sol4.gen.Workflow;
+import it.polito.dp2.WF.sol4.gen.WrongActor;
 import it.polito.dp2.WF.sol4.server.util.Utility;
 
 /**
+ * The WorkflowDataManager is the class that manages the data used by the WebService.
  * This class must be thread safe!
  * 
  * @author Luca
@@ -64,7 +69,6 @@ public class WorkflowDataManager {
 	}
 
 	public List<Workflow> getWorkflows(List<String> wfNames) throws UnknownNames_Exception {
-		//TODO: Check me!
 		List<String> wrongNames = new LinkedList<String>();
 		List<Workflow> workflows = new LinkedList<Workflow>();
 		
@@ -111,7 +115,6 @@ public class WorkflowDataManager {
 	}
 
 	public List<Process> getProcesses(List<String> wfNames) throws UnknownNames_Exception {
-		//TODO: Check me!
 		List<String> wrongNames = new LinkedList<String>();
 		
 		List<Process> processes = new LinkedList<Process>();
@@ -207,6 +210,58 @@ public class WorkflowDataManager {
 		processMap.put(myProcCode, newProcess);
 		
 		return myProcCode;
+	}
+
+	public boolean takeOverAction(String psCode, Actor actor)
+			throws ActionAlreadyTaken_Exception, UnknownCode, WrongActor {
+		
+		boolean toRet = false;
+		
+		Process p = processMap.get(psCode);
+		if(p==null) {
+			String message = "The select process <"+psCode+"> does not exists!";
+			
+			ErrorMessage faultInfo = objFactory.createErrorMessage();
+			faultInfo.setMessage(message);
+			throw new UnknownCode(message, faultInfo); 
+		}
+		
+		for( ActionStatusType as : p.getActionStatus() ) {
+			//I suppose that there is only one possible action
+			if(as.isTakenInCharge() == false) {
+				Object o = as.getAction();
+				if(o instanceof ActionType) {
+					ActionType azione = (ActionType) o;
+					
+					if(!actor.getRole().equals(azione.getRole())) {
+						String message = "The select actor <"+actor.getName()+"> does not has the right role!";
+						
+						ErrorMessage faultInfo = objFactory.createErrorMessage();
+						faultInfo.setMessage(message);
+						throw new WrongActor(message, faultInfo); 
+					}
+					else {
+						synchronized (azione) {
+							if(as.isTakenInCharge() == false) {
+								as.setActor(actor.getName());
+								as.setTakenInCharge(true);
+								as.setTimestamp( createXMLGregCalendar() );
+								toRet = true;
+								//break;
+							}
+						}
+						if(toRet == true)
+							return true;
+					}
+					
+				}
+				else {
+					System.err.println("The element is not an action type!");
+				}
+			}
+		}
+		
+		return toRet;
 	}
 
 	public boolean completeAction(String actionStatusName, String nextActionName) {
