@@ -1,0 +1,10 @@
+<!-- This document should be renamed as bindings.xml to be read by the ant script -->
+
+<jaxws:bindings
+    wsdlLocation="wsdl/Workflow.wsdl"
+    xmlns:jaxws="http://java.sun.com/xml/ns/jaxws">
+    
+	<jaxws:enableWrapperStyle>true</jaxws:enableWrapperStyle>
+	<!-- if true, wrapped convention = false -->
+	
+</jaxws:bindings>
