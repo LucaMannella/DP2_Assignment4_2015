@@ -12,7 +12,7 @@
 	<property name="WFInfo.WFMonitorFactory" value="it.polito.dp2.WF.Random.WorkflowMonitorFactoryImpl" />
 
 	<!-- The location to be used for class files -->
-	<property name="build.dir" location="${lab4.location}/build" />
+	<property name="build.dir" location="${lab4.location}/build" />		<!-- lab4.location is the basedir -->
 	<!-- The location for source files -->
 	<property name="src.dir" location="${lab4.location}/src" />
 	<!-- The location for jar files -->
@@ -121,7 +121,7 @@
 		</ant>
 	</target>
 
-	<!-- Debug Server (added by me) !-->
+	<!-- added by me !-->
 	<target name="debug-server" depends="setseed, build-server" description="Allow to debug the server">
 		<echo>Running server with seed: ${seed}</echo>
 		<java classname="${server.class}" failonerror="true" fork="yes">
@@ -138,7 +138,6 @@
 		</java>
 	</target>
 	
-	<!-- Run Server !-->
 	<target name="run-server" depends="setseed, build-server">
 		<echo>Running server with seed: ${seed}</echo>
 		<java classname="${server.class}" failonerror="true" fork="yes">
@@ -244,7 +243,7 @@
 				<path refid="test.classpath" />
 			</classpath>
 		</junit>
-		<fail if="test_failed" status="${exit.code}" message="*** Some Tests FAILED ***"/>
+		<fail if="test_failed" status="${exit.code}" message="*** Some Tests FAILED: alta sopra la traversa!!! ***"/>
 		<echo>*** All Tests PASSED  ***</echo>
 	</target>
 
