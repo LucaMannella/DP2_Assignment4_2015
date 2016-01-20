@@ -30,14 +30,14 @@ public class WorkflowInformation implements WorkflowInfoInterface {
 	private WorkflowDataManager manager;
 	private static Logger log = Logger.getLogger(WorkflowInformation.class.getName());
 
-	public WorkflowInformation(WorkflowDataManager wfManager) {	// TODO Auto-generated constructor stub
+	public WorkflowInformation(WorkflowDataManager wfManager) {
 		
 		this.manager = wfManager;
 	}
 
 	@WebMethod
 	@Override
-	public void getWorkflowNames(Holder<XMLGregorianCalendar> lastModTime, Holder<List<String>> names) {	//TODO: Check me
+	public void getWorkflowNames(Holder<XMLGregorianCalendar> lastModTime, Holder<List<String>> names) {
 		log.entering(log.getName(), "getWorkflowNames");
 		
 		lastModTime.value = manager.getLastWorkflowsUpdate();
@@ -50,7 +50,7 @@ public class WorkflowInformation implements WorkflowInfoInterface {
 	@WebMethod
 	@Override
 	public void getWorkflows(List<String> wfNames, Holder<XMLGregorianCalendar> lastModTime, Holder<List<Workflow>> workflows) 
-			throws UnknownNames_Exception {		//TODO: Check me
+			throws UnknownNames_Exception {
 		log.entering(log.getName(), "getWorkflows", wfNames.toString());
 		
 		lastModTime.value = manager.getLastWorkflowsUpdate();
