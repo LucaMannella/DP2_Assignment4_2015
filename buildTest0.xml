@@ -103,7 +103,11 @@
 	
 	<!-- Target runFuncTest.real	-->
 	<target name="runFuncTest.real" depends="build-client">
-		<junit printsummary="yes" dir="." fork="yes" haltonfailure="no" showoutput="no" filtertrace="true" timeout="120000">
+		<junit printsummary="yes" dir="." fork="yes" haltonfailure="no" showoutput="no" filtertrace="true"> <!-- timeout="120000"> -->
+			<!-- this is for debug purpose !>
+			<jvmarg value="-Xdebug" />
+			<jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=4321" />
+			<! end debug zone !-->
 			<jvmarg value="-Djava.awt.headless=true" />
 			<sysproperty key="it.polito.dp2.WF.Random.seed" value="${seed}"/>
 			<!-- We force testcase 2 -->
@@ -130,6 +134,8 @@
 	<target name="make-final-zip">
 		<zip destfile="${sol.zip}" 
 			basedir="${lab4.location}" 
-			includes="${sol.build.file} wsdl/** custom/* src/it/polito/dp2/WF/sol4/server/**/*.java src/it/polito/dp2/WF/sol4/client1/**/*.java src/it/polito/dp2/WF/sol4/client2/**/*.java answer.txt" />
+			includes="${sol.build.file} wsdl/** custom/* src/it/polito/dp2/WF/sol4/server/**/*.java src/it/polito/dp2/WF/sol4/client1/**/*.java 
+				src/it/polito/dp2/WF/sol4/client2/**/*.java src/it/polito/dp2/WF/sol4/client3/**/*.java 
+				src/it/polito/dp2/WF/lab4/**/*.java answer.txt" />
 	</target>
 </project>
