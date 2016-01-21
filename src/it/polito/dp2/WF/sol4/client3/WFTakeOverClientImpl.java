@@ -28,9 +28,7 @@ public class WFTakeOverClientImpl implements WFTakeOverClient {
 	private static final String CONTROL_WS_URL = "http://localhost:7070/wfcontrol";
 	private static final String INFO_WS_URL = "http://localhost:7071/wfinfo";
 	
-	public WFTakeOverClientImpl() {
-		// TODO Auto-generated constructor stub
-	}
+	public WFTakeOverClientImpl() {	/*empty default constructor */ }
 
 	// The actor does not have a role and we don't have a resource from which we can know them.
 	// So I take the role directly from the action and I'll assign them to the Actor.

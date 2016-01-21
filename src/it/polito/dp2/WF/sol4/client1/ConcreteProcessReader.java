@@ -13,9 +13,8 @@ import it.polito.dp2.WF.sol4.gen.ActionStatusType;
 import it.polito.dp2.WF.sol4.gen.Process;
 
 /**
- * This is a concrete implementation of the interface ProcessReader based on the JAX-WS framework.
- * 
- * @see {@link WorkflowReader}
+ * This is a concrete implementation of the interface {@link ProcessReader} based on the JAX-WS framework.
+ *
  * @author Luca
  */
 public class ConcreteProcessReader implements ProcessReader, Comparable<ProcessReader> {
@@ -51,6 +50,19 @@ public class ConcreteProcessReader implements ProcessReader, Comparable<ProcessR
 		return this.myWorkflow;
 	}
 	
+	/**
+	 * The comparison is based on the starting time. 
+	 * If the times are equal, it is based on the name of the relative workflows.
+	 */
+	@Override
+	public int compareTo(ProcessReader o) {
+		int toRet = startTime.compareTo(o.getStartTime());
+		if(toRet == 0)
+			toRet = myWorkflow.getName().compareTo(o.getWorkflow().getName());
+		
+		return toRet;
+	}
+
 	@Override
 	public String toString() {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
@@ -77,18 +89,5 @@ public class ConcreteProcessReader implements ProcessReader, Comparable<ProcessR
 		buf.append(" with "+statusActions.size()+" ActionStatus.");
 		
 		return buf.toString();
-	}
-
-	/**
-	 * The comparison is based on the starting time. 
-	 * If the times are equal, it is based on the name of the relative workflows.
-	 */
-	@Override
-	public int compareTo(ProcessReader o) {
-		int toRet = startTime.compareTo(o.getStartTime());
-		if(toRet == 0)
-			toRet = myWorkflow.getName().compareTo(o.getWorkflow().getName());
-		
-		return toRet;
 	}
 }

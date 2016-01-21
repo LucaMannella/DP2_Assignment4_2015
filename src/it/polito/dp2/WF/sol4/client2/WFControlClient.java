@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import it.polito.dp2.WF.sol4.gen.UnknownWorkflow;
+import it.polito.dp2.WF.sol4.gen.Workflow;
 import it.polito.dp2.WF.sol4.gen.WorkflowControllerInterface;
 import it.polito.dp2.WF.sol4.gen.WorkflowService;
 
@@ -11,10 +12,16 @@ public class WFControlClient {
 	
 	private static final String DEFAUL_WS_URL = "http://localhost:7070/wfcontrol";
 	
-	//return values legend:
-	// 0 --> success
-	// 1 --> error during the execution
-	// 2 --> general error (service unreachable)
+	/**
+	 * This method create a new {@link Workflow} inside the server given its name. <br>
+	 * The method exits with one of this values: <br>
+	 *	0 --> success <br>
+	 *	1 --> error during the execution <br>
+	 *	2 --> general error (service unreachable) <br> 
+	 * 
+	 * @param args [0] - The url of the web service
+	 * @param args [1] - The name of the Workflow
+	 */
 	public static void main(String[] args) {
 		if(args.length != 2) {
 			System.out.println("Error! Usage: <program_name> <URL> <Workflow_Name>\n");

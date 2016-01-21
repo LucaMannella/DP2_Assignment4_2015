@@ -9,7 +9,7 @@ import it.polito.dp2.WF.sol4.gen.ActionType;
 import it.polito.dp2.WF.sol4.gen.ActionType.ProcessAction;
 
 /**
- * This is a concrete implementation of abstract class AbstractActionReader (that implements the interface ActionReader).<BR>
+ * This is a concrete implementation of abstract class {@link AbstractActionReader} (that implements the interface ActionReader).<BR>
  * Another implementation of that abstract class is {@link SimpleActionR}<br>
  * This implementation is based on JAX-WS framework.
  *

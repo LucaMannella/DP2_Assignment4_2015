@@ -26,9 +26,8 @@ import it.polito.dp2.WF.sol4.gen.WorkflowInfoInterface;
 import it.polito.dp2.WF.sol4.gen.WorkflowService;
 
 /**
- * This is a concrete implementation of the interface WorkflowMonitor based on the JAX-WS framework.
+ * This is a concrete implementation of the interface {@link WorkflowMonitor} based on the JAX-WS framework.
  * 
- * @see {@link WorkflowMonitor}
  * @author Luca
  */
 public class ConcreteWorkflowMonitor implements WorkflowMonitor {
@@ -198,7 +197,7 @@ public class ConcreteWorkflowMonitor implements WorkflowMonitor {
 	 * This method is a shorter version of the toString method.
 	 * @return A string that represent the object.
 	 */
-	private String toShortString() {
+	public String toShortString() {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
 		
 		StringBuffer buf = new StringBuffer("Inside this WorkflowMonitor there are:\n");
