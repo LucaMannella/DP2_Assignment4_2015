@@ -10,14 +10,17 @@ import javax.xml.ws.Holder;
 
 import it.polito.dp2.WF.lab4.ServiceUnavailableException;
 import it.polito.dp2.WF.lab4.WFTakeOverClient;
-import it.polito.dp2.WF.sol4.gen.ActionAlreadyTaken_Exception;
+import it.polito.dp2.WF.sol4.gen.ActionStatusType;
+import it.polito.dp2.WF.sol4.gen.ActionType;
 import it.polito.dp2.WF.sol4.gen.Actor;
+import it.polito.dp2.WF.sol4.gen.Process;
 import it.polito.dp2.WF.sol4.gen.UnknownCode;
 import it.polito.dp2.WF.sol4.gen.UnknownNames_Exception;
 import it.polito.dp2.WF.sol4.gen.Workflow;
 import it.polito.dp2.WF.sol4.gen.WorkflowControllerInterface;
 import it.polito.dp2.WF.sol4.gen.WorkflowInfoInterface;
 import it.polito.dp2.WF.sol4.gen.WorkflowService;
+import it.polito.dp2.WF.sol4.gen.WrongAction;
 import it.polito.dp2.WF.sol4.gen.WrongActor;
 
 public class WFTakeOverClientImpl implements WFTakeOverClient {
@@ -29,71 +32,86 @@ public class WFTakeOverClientImpl implements WFTakeOverClient {
 		// TODO Auto-generated constructor stub
 	}
 
+	// The actor does not have a role and we don't have a resource from which we can know them.
+	// So I take the role directly from the action and I'll assign them to the Actor.
 	@Override
 	public boolean takeOver(String workflowName, String actionName,	String actorName) 
 			throws ServiceUnavailableException {
 		
 		boolean toRet = false;
+		System.out.println("The actor "+actorName+" wants to take the action "
+				+actionName+" in a workflow "+workflowName);
 		
 		try {	// creating the URL object
 			URL webServiceInfoURL = new URL(INFO_WS_URL);
 			URL webServiceControlURL = new URL(CONTROL_WS_URL);
 			
-			// taking the port (proxy) from the service
-			WorkflowService service = new WorkflowService(webServiceInfoURL);
-			WorkflowInfoInterface proxyReader = service.getWorkflowInfoPort();
+				// taking the port (proxy) from the service
+			WorkflowInfoInterface proxyReader = new WorkflowService(webServiceInfoURL).getWorkflowInfoPort();
+			WorkflowControllerInterface proxyController = new WorkflowService(webServiceControlURL).getWorkflowControllerPort();
 			
-			service = new WorkflowService(webServiceControlURL);
-			WorkflowControllerInterface proxyController = service.getWorkflowControllerPort();
-			
+				// preparing the workflow name
 			List<String> wfNames = new LinkedList<String>();
 			wfNames.add(workflowName);
+				// preparing the return values
 			Holder<XMLGregorianCalendar> lastModTime = new Holder<XMLGregorianCalendar>();
-			Holder<List<Workflow>> workflows = new Holder<List<Workflow>>();
-			Holder<List<it.polito.dp2.WF.sol4.gen.Process>> processes = new Holder<List<it.polito.dp2.WF.sol4.gen.Process>>();
-			proxyReader.getProcesses(wfNames, lastModTime, processes, workflows);
+			Holder<List<Workflow>> workflowHolder = new Holder<List<Workflow>>();
+			Holder<List<Process>> processHolder = new Holder<List<Process>>();
+				// get the information about processes
+			proxyReader.getProcesses(wfNames, lastModTime, processHolder, workflowHolder);
 			
-			Actor actor = new Actor();
-			actor.setName(actorName);
-//			actor.setRole(arg2);
+			System.out.println("There are "+processHolder.value.size()+" available processes...");
 			
-			for( it.polito.dp2.WF.sol4.gen.Process p : processes.value ) {
-				String psCode = p.getCode();
-				toRet = proxyController.takeOverAction(psCode, actor);
-				if(toRet == true)
-					break;
+			for( Process p : processHolder.value) {
+				for( ActionStatusType as : p.getActionStatus()) {
+					Object o = as.getAction();
+					if( o instanceof ActionType ) {
+						ActionType action = (ActionType) o;
+							// this is a possible action
+						if( action.getName().equals(actionName) ){
+							Actor actor = new Actor();
+							actor.setName(actorName);
+							actor.setRole(action.getRole());
+							
+							toRet = proxyController.takeOverAction(p.getCode(), actionName, actor);
+							if(toRet == false)
+								System.out.println("Impossible to take over the action in the process "+p.getCode());
+							else
+								return true;
+						}
+					}
+					else {
+						System.out.println("Error! The Object is not an ActionStatusType!");
+					}
+				}
 			}
 		}
 		catch (MalformedURLException e) {
-			System.err.println("Error! The given URL is not well formed!");
+			System.out.println("Error! The given URL is not well formed!");
 			throw new ServiceUnavailableException("The given URL is not well formed!");
 		}
-		catch (ActionAlreadyTaken_Exception e) {
-			System.err.println("Impossible to take over the action!"
+		catch (WrongAction e) {
+			System.out.println("Impossible to take over the action!\n"
 					+ e.getMessage());
 			return false;
 		}
 		catch (UnknownCode e) {
-			System.err.println("Impossible to take over the action!"
+			System.out.println("Impossible to take over the action!\n"
 					+ e.getMessage());
 			return false;
 		}
 		catch (WrongActor e) {
-			System.err.println("Impossible to take over the action!"
+			System.out.println("Impossible to take over the action!\n"
 					+ e.getMessage());
 			return false;
 		} 
 		catch (UnknownNames_Exception e) {
-			System.err.println("Impossible to take over the action!"
+			System.out.println("Impossible to take over the action!\n"
 					+ e.getMessage());
 			return false;
 		}
-		
-		if(toRet == false) {
-			System.err.println("Impossible to take over the action!");
-		}
-		return toRet;
 
+		return toRet;
 	}
 
 }
