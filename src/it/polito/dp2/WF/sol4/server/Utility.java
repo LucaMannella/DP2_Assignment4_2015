@@ -1,4 +1,4 @@
-package it.polito.dp2.WF.sol4.server.util;
+package it.polito.dp2.WF.sol4.server;
 
 import java.util.HashMap;
 import java.util.List;
