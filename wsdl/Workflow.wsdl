@@ -22,7 +22,7 @@
 		<xsd:element name="UnknownActionName" type="wfm:ErrorMessage" />
 		<xsd:element name="UnknownNextActionName" type="wfm:ErrorMessage" />
 		
-		<xsd:element name="ActionAlreadyTaken" type="wfm:ActionAlreadyTaken" />
+		<xsd:element name="WrongAction" type="wfm:ErrorMessage" />
 		<xsd:element name="ActionAlreadyFinished" type="wfm:ActionAlreadyFinished" />
 					
 		<xsd:element name="getWorkflowNames">
@@ -107,7 +107,8 @@
 		<xsd:element name="takeOverAction">
 			<xsd:complexType>
 				<xsd:sequence>
-					<xsd:element name="psCode" type="wf:ProcessCode" />
+					<xsd:element name="processCode" type="wf:ProcessCode" />
+					<xsd:element name="actionName" type="xsd:token" />
 					<xsd:element ref="wf:actor" />
 				</xsd:sequence>
 			</xsd:complexType>
@@ -123,6 +124,7 @@
 		<xsd:element name="completeAction">
 			<xsd:complexType>
 				<xsd:sequence>
+					<xsd:element name="processCode" type="wf:ProcessCode" />
 					<xsd:element name="actionStatusName" type="xsd:token" />
 					<xsd:element name="nextActionName" nillable="true" type="xsd:token" />
 				</xsd:sequence>
@@ -146,13 +148,6 @@
 		
 		<xsd:complexType name="ErrorMessage">
 			<xsd:sequence>
-				<xsd:element name="message" type="xsd:string" minOccurs="0" />
-			</xsd:sequence>
-		</xsd:complexType>
-		
-		<xsd:complexType name="ActionAlreadyTaken">
-			<xsd:sequence>
-				<xsd:element name="ActorName" type="xsd:string" />
 				<xsd:element name="message" type="xsd:string" minOccurs="0" />
 			</xsd:sequence>
 		</xsd:complexType>
@@ -239,8 +234,8 @@
 		<wsdl:part name="fault" element="wfm:UnknownNextActionName"/>
 	</wsdl:message>
 	
-	<wsdl:message name="ActionAlreadyTaken">
-		<wsdl:part name="fault" element="wfm:ActionAlreadyTaken" />
+	<wsdl:message name="WrongAction">
+		<wsdl:part name="fault" element="wfm:WrongAction" />
 	</wsdl:message>
 	<wsdl:message name="ActionAlreadyFinished">
 		<wsdl:part name="fault" element="wfm:ActionAlreadyFinished"/>
@@ -318,7 +313,7 @@
 			<wsdl:output message="wfm:takeOverActionResponse"/>
             <wsdl:fault name="faultCode" message="wfm:UnknownCode"/>
             <wsdl:fault name="faultActor" message="wfm:WrongActor"/>
-            <wsdl:fault name="faultActionTaken" message="wfm:ActionAlreadyTaken" />
+            <wsdl:fault name="faultAction" message="wfm:WrongAction"/>
         </wsdl:operation>
 		
 		<wsdl:operation name="completeAction">
@@ -331,7 +326,7 @@
 			<wsdl:output message="wfm:completeActionResponse"/>
             <wsdl:fault name="faultActionName" message="wfm:UnknownActionName"/>
             <wsdl:fault name="faultNextActionName" message="wfm:UnknownNextActionName"/>
-            <wsdl:fault name="faultActionFinished" message="wfm:ActionAlreadyFinished" />
+            <wsdl:fault name="faultActionFinished" message="wfm:ActionAlreadyFinished"/>
         </wsdl:operation>
 	</wsdl:portType>
 	
@@ -419,8 +414,8 @@
 			<wsdl:fault name="faultActor">
 				<soap:fault use="literal" name="faultActor" />
 			</wsdl:fault>
-			<wsdl:fault name="faultActionTaken">
-				<soap:fault use="literal" name="faultActionTaken" />
+			<wsdl:fault name="faultAction">
+				<soap:fault use="literal" name="faultAction" />
 			</wsdl:fault>
 		</wsdl:operation>
 
