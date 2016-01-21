@@ -6,6 +6,9 @@ Answer 1)
 
 This is the method that perform the marshalling: 
 	private void marshallDocument(WorkflowManager root, PrintStream outputFile) throws JAXBException, SAXException, IllegalArgumentException {
+		/* - Creating the JAXB context to perform a validation - */
+		JAXBContext jc = JAXBContext.newInstance(PACKAGE);
+		
 		/* - Creating an instance of the XML Schema - */
 		Schema schema;
 		try {
@@ -32,9 +35,9 @@ The root is an instance of the class WorkflowManager and it represents the root 
 it contains all the elements of the XML document.
 The PrintStream outputFile is the stream on which will be written the XML document.
 
+The object JAXBContext jc is an entry point for the JAXB API.
 The try-catch block is related to the creation of an instance of the XML Schema that will be used to validate the output file.
 If something wrong happens an exception will be thrown and the marshalling will be interrupted.
-The object JAXBContext jc was instantiated previously and it is an entry point for the JAXB API.
 From the jc element will be taken the Marshaller m, an object that is able to marshall the object root into an XML file.
 To this marshaller will be set two property: the JAXB_FORMATTED_OUTPUT and the JAXB_SCHEMA_LOCATION.
 The first one allows to the marshal to create a more readable document,
@@ -43,7 +46,7 @@ The setSchema method will set the Schema object previously created and it will e
 operation, in this way we will be sure that the created document will be valid.
 
 Finally the marshal operation will create the XML file.
-If it is not possible to create the Marshaller or the XML output file a JAXBException will be throwned.
+If it is not possible to create the Marshaller or the XML output file a JAXBException will be thrown.
  
 - Question 2)
 Explain how in the code of your server you avoid that two clients that are 
