@@ -52,22 +52,24 @@ performing the take over operation concurrently on the same action succeed both.
 Answer 2)
 
 This is a simplified version of the part that take care of that:
-	for( ActionStatusType as : p.getActionStatus()) {
-		toRet = false;
-		if(as.isTakenInCharge() == false) {
-			synchronized (azione) {
-				if(as.isTakenInCharge() == false) {
-					as.setActor(actor.getName());
-					as.setTakenInCharge(true);
-					as.setTimestamp( createXMLGregCalendar() );
-					toRet = true;
-				}
-				if(toRet == true)
-					return true;
+	boolean taken = false;
+	:::
+	if(actionStatus.isTakenInCharge() == false) {
+		azione = actionStatus.getAction();
+		synchronized (actionStatus) {
+			if(actionStatus.isTakenInCharge() == false) {
+				actionStatus.setActor(actor.getName());
+				actionStatus.setTakenInCharge(true);
+				
+				taken = true;
 			}
-		}
+		}	// if I take an action I stop the method
+		if(taken == true) return true;
 	}
+	:::
+	return false
 I'm looking if an action was already taken in charge; if I found an action that could be ok I take the lock.
-After that I check again if the action was really already taken or not (useful if I'm not the first to enter in this block).
+After that I check again if the action was really already taken or not (useful if I'm not the first to enter in this block of code).
 If not, the actor will take the action and the execution of the method is stopped.
-Otherwise the loop will continue (maybe there is another good action).
+Otherwise I will look for another possible action.
+If nothing else is found was returned false.
