@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema version="1.0" elementFormDefault="qualified"
+		targetNamespace="http://lucamannella.altervista.org/WorkflowManager/"
+		xmlns:wf="http://lucamannella.altervista.org/WFInfo"
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+		xmlns:wfm="http://lucamannella.altervista.org/WorkflowManager/" >
+	
+	<xsd:import namespace="http://lucamannella.altervista.org/WFInfo" schemaLocation="WFInfo.xsd"/>
+	
+	<xsd:element name="UnknownNames" type="wfm:UnknownNames" />
+	<xsd:element name="UnknownCode" type="wfm:ErrorMessage" />
+	<xsd:element name="UnknownWorkflow" type="wfm:ErrorMessage"/>
+	<xsd:element name="WrongActor" type="wfm:ErrorMessage" />
+	<xsd:element name="UnknownActionName" type="wfm:ErrorMessage" />
+	<xsd:element name="UnknownNextActionName" type="wfm:ErrorMessage" />
+	
+	<xsd:element name="WrongAction" type="wfm:ErrorMessage" />
+	<xsd:element name="ActionAlreadyFinished" type="wfm:ActionAlreadyFinished" />
+				
+	<xsd:element name="getWorkflowNames">
+		<xsd:complexType>
+			<xsd:sequence />
+		</xsd:complexType>
+	</xsd:element>		
+	<xsd:element name="getWorkflowNamesResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="lastModTime" type="xsd:dateTime" />
+				<xsd:element name="name" type="xsd:token" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="getWorkflows">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="wfName" type="xsd:token" nillable="true" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="getWorkflowsResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="lastModTime" type="xsd:dateTime" />
+				<xsd:element ref="wf:workflow" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="getProcesses">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="wfName" type="xsd:token" minOccurs="1" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="getProcessesResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="lastModTime" type="xsd:dateTime" />
+				<xsd:element ref="wf:process" minOccurs="0" maxOccurs="unbounded" />
+				<xsd:element ref="wf:workflow" minOccurs="1" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	
+	<xsd:element name="createNewProcess">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="wfName" type="xsd:token" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="createNewProcessResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="psCode" type="wf:ProcessCode" nillable="true" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	
+	<xsd:element name="getActions">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="psCode" type="wf:ProcessCode" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="getActionsResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="returnValues" type="wf:action_status_type" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="takeOverAction">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="processCode" type="wf:ProcessCode" />
+				<xsd:element name="actionName" type="xsd:token" />
+				<xsd:element ref="wf:actor" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="takeOverActionResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="result" type="xsd:boolean" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="completeAction">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="processCode" type="wf:ProcessCode" />
+				<xsd:element name="actionStatusName" type="xsd:token" />
+				<xsd:element name="nextActionName" nillable="true" type="xsd:token" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="completeActionResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="result" type="xsd:boolean" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	
+	<xsd:complexType name="UnknownNames">
+		<xsd:sequence>
+			<xsd:element name="name" type="wfm:Name" maxOccurs="unbounded" />
+			<xsd:element name="message" type="xsd:string" minOccurs="0" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="ErrorMessage">
+		<xsd:sequence>
+			<xsd:element name="message" type="xsd:string" minOccurs="0" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="ActionAlreadyFinished">
+		<xsd:sequence>
+			<xsd:element name="ActorName" type="xsd:string" />
+			<xsd:element name="message" type="xsd:string" minOccurs="0" />
+		</xsd:sequence>
+	</xsd:complexType>
+		
+		
+	<xsd:simpleType name="Name">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[a-zA-Z][a-zA-Z0-9]*" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+</xsd:schema>
