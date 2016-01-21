@@ -22,7 +22,6 @@ import it.polito.dp2.WF.ProcessReader;
 import it.polito.dp2.WF.SimpleActionReader;
 import it.polito.dp2.WF.WorkflowMonitor;
 import it.polito.dp2.WF.WorkflowReader;
-import it.polito.dp2.WF.sol4.gen.ActionAlreadyTaken_Exception;
 import it.polito.dp2.WF.sol4.gen.ActionStatusType;
 import it.polito.dp2.WF.sol4.gen.ActionType;
 import it.polito.dp2.WF.sol4.gen.ActionType.SimpleAction;
@@ -35,6 +34,7 @@ import it.polito.dp2.WF.sol4.gen.UnknownNames;
 import it.polito.dp2.WF.sol4.gen.UnknownNames_Exception;
 import it.polito.dp2.WF.sol4.gen.UnknownWorkflow;
 import it.polito.dp2.WF.sol4.gen.Workflow;
+import it.polito.dp2.WF.sol4.gen.WrongAction;
 import it.polito.dp2.WF.sol4.gen.WrongActor;
 import it.polito.dp2.WF.sol4.server.util.Utility;
 
@@ -212,10 +212,10 @@ public class WorkflowDataManager {
 		return myProcCode;
 	}
 
-	public boolean takeOverAction(String psCode, Actor actor)
-			throws ActionAlreadyTaken_Exception, UnknownCode, WrongActor {
+	public boolean takeOverAction(String psCode, String actionName, Actor actor)
+			throws UnknownCode, WrongAction, WrongActor {
 		
-		boolean toRet = false;
+		boolean taken = false;
 		
 		Process p = processMap.get(psCode);
 		if(p==null) {
@@ -225,43 +225,49 @@ public class WorkflowDataManager {
 			faultInfo.setMessage(message);
 			throw new UnknownCode(message, faultInfo); 
 		}
+		if(existsAction(actionName, p.getActionStatus()) == false) {
+			String message = "The select action <"+actionName
+					+"> does not exists in the process <"+psCode+">!";
+			
+			ErrorMessage faultInfo = objFactory.createErrorMessage();
+			faultInfo.setMessage(message);
+			throw new WrongAction(message, faultInfo); 
+		}
 		
-		for( ActionStatusType as : p.getActionStatus() ) {
-			//I suppose that there is only one possible action
-			if(as.isTakenInCharge() == false) {
-				Object o = as.getAction();
+		for( ActionStatusType actionStatus : p.getActionStatus() ){
+			if(actionStatus.isTakenInCharge() == false) {
+				Object o = actionStatus.getAction();
 				if(o instanceof ActionType) {
 					ActionType azione = (ActionType) o;
 					
-					if(!actor.getRole().equals(azione.getRole())) {
-						String message = "The select actor <"+actor.getName()+"> does not has the right role!";
-						
-						ErrorMessage faultInfo = objFactory.createErrorMessage();
-						faultInfo.setMessage(message);
-						throw new WrongActor(message, faultInfo); 
-					}
-					else {
-						synchronized (azione) {
-							if(as.isTakenInCharge() == false) {
-								as.setActor(actor.getName());
-								as.setTakenInCharge(true);
-								as.setTimestamp( createXMLGregCalendar() );
-								toRet = true;
-								//break;
-							}
+					if( azione.getName().equals(actionName) ){
+							// if it's not the right actor for this action, exception is thrown
+						if(!actor.getRole().equals(azione.getRole())) {
+							String message = "The select actor <"+actor.getName()+"> does not has the right role!\n"
+									+azione.getRole()+"is expected but actor is a "+actor.getRole();
+							
+							ErrorMessage faultInfo = objFactory.createErrorMessage();
+							faultInfo.setMessage(message);
+							throw new WrongActor(message, faultInfo); 
 						}
-						if(toRet == true)
-							return true;
+							// I try to take the action
+						synchronized (actionStatus) {
+							if(actionStatus.isTakenInCharge() == false) {
+								actionStatus.setActor(actor.getName());
+								actionStatus.setTakenInCharge(true);
+								
+								taken = true;
+							}
+						}	// if I take an action I stop the method
+						if(taken == true) return true;
 					}
-					
-				}
-				else {
-					System.err.println("The element is not an action type!");
+				} else {
+					System.err.println("Server Error! The element is not an action type!");
 				}
 			}
 		}
 		
-		return toRet;
+		return false;
 	}
 
 	public boolean completeAction(String actionStatusName, String nextActionName) {
@@ -311,6 +317,19 @@ public class WorkflowDataManager {
 		}
 		
 		return startTime;
+	}
+
+	
+	private boolean existsAction(String actionName, List<ActionStatusType> actionStatus) {
+		for(ActionStatusType as : actionStatus) {
+			Object o = as.getAction();
+			if(o instanceof ActionType) {
+				ActionType action = (ActionType) o;
+				if( action.getName().equals(actionName) )
+					return true;
+			}
+		}
+		return false;
 	}
 
 	/**
