@@ -25,7 +25,9 @@ public class ConcreteProcessReader implements ProcessReader, Comparable<ProcessR
 
 	public ConcreteProcessReader(Process process, WorkflowReader myWF) {
 		this.myWorkflow = myWF;
-//TODO:	if(process == null) return;	//safety lock
+		
+		if(process == null) return;	//safety lock
+		
 		this.startTime = process.getStarted().toGregorianCalendar();
 		
 		statusActions = new LinkedList<ActionStatusReader>();
