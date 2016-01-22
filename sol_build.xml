@@ -10,7 +10,8 @@
 	<property name="buildDir" location="${basedir}/build" />
 	<property name="genDir" location="${basedir}/gen-src" />
 	<property name="libDir" location="${basedir}/lib" />
-	<property name="WSDLpath" location="${basedir}/wsdl/Workflow.wsdl" />
+	<property name="wsdlDir" location="${basedir}/wsdl" />
+	<property name="WSDLpath" location="${wsdlDir}/Workflow.wsdl" />
 
 	<property name="package" value="it.polito.dp2.WF.sol4.gen"/>
 	
@@ -41,8 +42,9 @@
 	<!-- Init !-->
 	<target name="init">
 		<echo> Creating folders... </echo>
-		<mkdir dir="${buildDir}" />
 		<mkdir dir="${genDir}" />
+		<mkdir dir="${buildDir}" />
+		<mkdir dir="${buildDir}/META-INF"/>
 	</target>
 
 	<!-- Clean !-->
@@ -62,6 +64,13 @@
 
 	<!-- Server Building !-->
 	<target name="build-server" depends="init, compile-wsdl" >
+		<echo> Coping files... </echo>
+		<!-- copy wsdl file to META-INF directory -->
+		<copy toDir="${buildDir}/META-INF" overwrite="true">
+	    	<fileset dir="${wsdlDir}">
+	    		<include name="*"/>
+			</fileset>
+	  	</copy>
 		<echo> Building the server... </echo>
 		<javac destdir="${buildDir}" debug="${debug}" debuglevel="${debugLevel}" source="${javaVersion}" target="${javaVersion}" includeantruntime="false">
 			<src path="${srcDir}"/>
