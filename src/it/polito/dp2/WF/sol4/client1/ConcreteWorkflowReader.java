@@ -30,7 +30,8 @@ public class ConcreteWorkflowReader implements WorkflowReader, Comparable<Workfl
 		actionReaderMap = new HashMap<String, ActionReader>();
 		processes = new TreeSet<ProcessReader>();
 		
-//TODO:	if(workflow == null) return;	//safety lock
+		if(workflow == null) return;	//safety lock
+		
 		this.name = workflow.getName();
 		
 		// set the actions inside the object
