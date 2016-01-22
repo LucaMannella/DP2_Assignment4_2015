@@ -2,6 +2,7 @@ package it.polito.dp2.WF.sol4.server;
 
 import java.util.logging.Logger;
 
+import javax.jws.HandlerChain;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlSeeAlso;
@@ -21,8 +22,10 @@ import it.polito.dp2.WF.sol4.gen.WrongActor;
 			targetNamespace = "http://lucamannella.altervista.org/WorkflowManager/",
 			serviceName = "WorkflowService",
 			portName = "WorkflowControllerPort",
-			endpointInterface = "it.polito.dp2.WF.sol4.gen.WorkflowControllerInterface")
+			endpointInterface = "it.polito.dp2.WF.sol4.gen.WorkflowControllerInterface",
+			wsdlLocation = "META-INF/Workflow.wsdl")
 @XmlSeeAlso({ObjectFactory.class})
+@HandlerChain(file = "META-INF/handler-chains.xml")
 public class WorkflowController implements WorkflowControllerInterface {
 	
 	private WorkflowDataManager manager;
