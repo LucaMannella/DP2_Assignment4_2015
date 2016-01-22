@@ -135,7 +135,7 @@ public class ConcreteWorkflowMonitor implements WorkflowMonitor {
 			throw new WorkflowMonitorException("Error retrieving the processes: "+e.getMessage());
 		}
 		
-		// build the ProcessReader Map		//TODO: try to check here!
+		// build the ProcessReader Map
 		for( Process p : processesHolder.value ) {
 			WorkflowReader wfr = workflows.get(p.getWorkflow());
 			ProcessReader pr = new ConcreteProcessReader(p, wfr);
