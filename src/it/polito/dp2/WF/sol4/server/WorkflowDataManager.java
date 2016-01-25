@@ -179,7 +179,7 @@ public class WorkflowDataManager {
 		// creating a new process
 		Process newProcess = objFactory.createProcess();
 	
-		newProcess.setStarted( createXMLGregCalendar() );
+		newProcess.setStarted( Utility.createXMLGregCalendar() );
 		newProcess.setWorkflow(wfName);
 		
 		// creating the actionStatus elements from the Workflow's actions
@@ -274,50 +274,6 @@ public class WorkflowDataManager {
 		return false;
 	}
 
-	/**
-	 * This method create a {@link XMLGregorianCalendar} instance with the current timestamp.
-	 * 
-	 * @return A {@link XMLGregorianCalendar} instance
-	 */
-	private XMLGregorianCalendar createXMLGregCalendar() {
-		GregorianCalendar cal = new GregorianCalendar();
-		XMLGregorianCalendar startTime = null;
-		
-		try {
-			startTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
-		}
-		catch (DatatypeConfigurationException e) {
-			System.err.println("Error! There is a problem with the instantiation of the DatatypeFactory");
-			System.err.println(e.getMessage());
-			e.printStackTrace();
-		}
-		
-		return startTime;
-	}
-	
-	/**
-	 * This method create a {@link XMLGregorianCalendar} instance with the same time of the calendar given as parameter.
-	 * 
-	 * @param calendar - An instance of {@link Calendar} interface.
-	 * @return A {@link XMLGregorianCalendar} instance
-	 */
-	private XMLGregorianCalendar createXMLGregCalendar(Calendar calendar) {
-		GregorianCalendar cal = new GregorianCalendar();
-		cal.setTimeInMillis(calendar.getTimeInMillis());
-		
-		XMLGregorianCalendar startTime = null;
-		try {
-			startTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
-		}
-		catch (DatatypeConfigurationException e) {
-			System.err.println("Error! There is a problem with the instantiation of the DatatypeFactory");
-			System.err.println(e.getMessage());
-			e.printStackTrace();
-		}
-		
-		return startTime;
-	}
-
 	
 	private boolean existsAction(String actionName, List<ActionStatusType> actionStatus) {
 		for(ActionStatusType as : actionStatus) {
@@ -352,7 +308,7 @@ public class WorkflowDataManager {
 			workflowMap.put(wfName, wf);
 			workflowNames.add(wfName);
 		}
-		lastWorkflowUpdate = createXMLGregCalendar();
+		lastWorkflowUpdate = Utility.createXMLGregCalendar();
 		
 		for( ProcessReader psr : wfMonitor.getProcesses() ) {
 			String pCode = "p"+intCode;
@@ -362,7 +318,7 @@ public class WorkflowDataManager {
 			
 			intCode++;	//we are in the constructor, intCode is not yet shared
 		}
-		lastProcessUpdate = createXMLGregCalendar();
+		lastProcessUpdate = Utility.createXMLGregCalendar();
 		
 		log.exiting(log.getName(), "Constructor");
 	}
@@ -486,7 +442,7 @@ public class WorkflowDataManager {
 		process.setWorkflow(wfName);
 		
 		// - Generating and setting the XMLGregorianCalendar - //
-		XMLGregorianCalendar startTime = createXMLGregCalendar(psr.getStartTime());
+		XMLGregorianCalendar startTime = Utility.createXMLGregCalendar(psr.getStartTime());
 		process.setStarted(startTime);
 		
 		// - preparing data for the creation of the actions - //
@@ -531,7 +487,7 @@ public class WorkflowDataManager {
 
 		if (asr.isTerminated())	{		//was the action completed?
 			// - Generating a new XMLGregorianCalendar - //
-			XMLGregorianCalendar endTime = createXMLGregCalendar( asr.getTerminationTime() );
+			XMLGregorianCalendar endTime = Utility.createXMLGregCalendar( asr.getTerminationTime() );
 			action.setTimestamp(endTime);
 		}
 		
