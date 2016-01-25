@@ -2,7 +2,7 @@ package it.polito.dp2.WF.sol4.server;
 
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
-import java.io.InputStream;
+import java.io.File;
 import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
@@ -15,7 +15,6 @@ import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFault;
 import javax.xml.soap.SOAPMessage;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.ws.handler.MessageContext;
@@ -45,14 +44,15 @@ public class ValidationHandler implements SOAPHandler<SOAPMessageContext> {
 				    generateSOAPFault(msg, "No message body.");
 				    return false;
 				}
-				InputStream schemaStream = ValidationHandler.class.getResourceAsStream(schemaLocation);
+				//InputStream schemaStream = ValidationHandler.class.getResourceAsStream(schemaLocation);
 				JAXBContext jc = JAXBContext.newInstance(jaxbPackage);
 	            Unmarshaller u = jc.createUnmarshaller();
 				
 	            SchemaFactory sf = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
 	            try {
-	            	//Schema schema = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI).newSchema(new File(schemaLocation));
-	                Schema schema = sf.newSchema(new StreamSource(schemaStream));
+	            	File file = new File(schemaLocation);
+	            	Schema schema = sf.newSchema(file);
+	                //Schema schema = sf.newSchema(new StreamSource(schemaStream));
 	                u.setSchema(schema);
 	            } catch (org.xml.sax.SAXException se) {
 	            	System.err.println("Unable to validate due to internal schema error.");
