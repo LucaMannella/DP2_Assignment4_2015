@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="WF-4-SampleTest" default="run-final-test" basedir=".">
+<project name="WF-4 SampleTest" default="run-final-test" basedir=".">
 	<description>
 			Script for WF Sample final test
 	</description>
