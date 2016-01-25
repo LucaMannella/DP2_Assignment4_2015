@@ -18,6 +18,8 @@ import it.polito.dp2.WF.sol4.gen.WorkflowControllerInterface;
 import it.polito.dp2.WF.sol4.gen.WrongAction;
 import it.polito.dp2.WF.sol4.gen.WrongActor;
 
+import java.util.List;
+
 @WebService(name = "WorkflowControllerInterface", 
 			targetNamespace = "http://lucamannella.altervista.org/WorkflowManager/",
 			serviceName = "WorkflowService",
@@ -63,12 +65,12 @@ public class WorkflowController implements WorkflowControllerInterface {
 			
 	@WebMethod
 	@Override
-	public boolean completeAction(String processCode, String actionStatusName, String nextActionName)
+	public boolean completeAction(String processCode, String actionStatusName, List<String>nextActions)
 			throws ActionAlreadyFinished_Exception, UnknownActionName, UnknownNextActionName {
 		log.entering(log.getName(), "completeAction");
 		
 		// ---	This method is not required by the specifications.	--- //
-		boolean toRet = manager.completeAction(actionStatusName, nextActionName);
+		boolean toRet = manager.completeAction(actionStatusName, nextActions);
 		
 		log.exiting(log.getName(), "completeAction");
 		return toRet;

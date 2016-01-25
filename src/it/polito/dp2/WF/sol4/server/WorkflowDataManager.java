@@ -1,20 +1,5 @@
 package it.polito.dp2.WF.sol4.server;
 
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Logger;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import it.polito.dp2.WF.ActionReader;
 import it.polito.dp2.WF.ActionStatusReader;
 import it.polito.dp2.WF.ProcessActionReader;
@@ -36,6 +21,18 @@ import it.polito.dp2.WF.sol4.gen.UnknownWorkflow;
 import it.polito.dp2.WF.sol4.gen.Workflow;
 import it.polito.dp2.WF.sol4.gen.WrongAction;
 import it.polito.dp2.WF.sol4.gen.WrongActor;
+
+import java.util.Collection;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
+
+import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
  * The WorkflowDataManager is the class that manages the data used by the WebService.
@@ -269,7 +266,7 @@ public class WorkflowDataManager {
 		return false;
 	}
 
-	public boolean completeAction(String actionStatusName, String nextActionName) {
+	public boolean completeAction(String actionStatusName, List<String> nextActions) {
 		// TODO Auto-generated method stub
 		return false;
 	}
