@@ -22,7 +22,7 @@ import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
 public class ValidationHandler implements SOAPHandler<SOAPMessageContext> {
-	protected String schemaLocation = "META-INF/Workflow.xsd";
+	protected String schemaLocation = "build/META-INF/Workflow.xsd";
 	protected String jaxbPackage = "it.polito.dp2.WF.sol4.gen";
 
 	@Override
@@ -55,9 +55,13 @@ public class ValidationHandler implements SOAPHandler<SOAPMessageContext> {
 	                //Schema schema = sf.newSchema(new StreamSource(schemaStream));
 	                u.setSchema(schema);
 	            } catch (org.xml.sax.SAXException se) {
+	            	String absolute = getClass().getProtectionDomain().getCodeSource().getLocation().toExternalForm();
+	            	absolute = absolute.substring(0, absolute.length() - 1);
+	            	absolute = absolute.substring(0, absolute.lastIndexOf("/") + 1);
+	            	System.err.println(absolute);
 	            	System.err.println("Unable to validate due to internal schema error.");
-	            	//generateSOAPFault(msg, "Unable to validate due to internal schema error.");
-	            	//return false;
+	            	generateSOAPFault(msg, "Unable to validate due to internal schema error.");
+	            	return false;
 	            }
 
 	            if( body.getChildNodes().getLength() > 1 ) {
