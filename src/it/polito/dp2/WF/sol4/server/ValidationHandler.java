@@ -73,7 +73,9 @@ public class ValidationHandler implements SOAPHandler<SOAPMessageContext> {
 	            
 	            System.out.println("Message ok!");
 		    }
-		    catch(SOAPException e) { return false; }
+		    catch(SOAPException e) { 
+		    	return false; 
+		    }
 		    catch( UnmarshalException ue ) { 
 		    	generateSOAPFault(msg, "Invalid input message body.");
 		    	return false;
