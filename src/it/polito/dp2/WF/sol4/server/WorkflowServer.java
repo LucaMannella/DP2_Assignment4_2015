@@ -17,39 +17,33 @@ public class WorkflowServer {
 	public final static int MAX_THREADS = 7;
 
 	public static void main(String[] args) {
-		
-		WorkflowMonitor wfMonitor = null;
 		try {
-			wfMonitor = WorkflowMonitorFactory.newInstance().newWorkflowMonitor();
-		}
-		catch (FactoryConfigurationError e) {
-			System.err.println("Configuration Error! Impossible to create the WorkflowMonitorFactory!");
-			e.printStackTrace();
-			System.exit(-1);
-		}
-		catch (WorkflowMonitorException e) {
-			System.err.println("Error! Impossible to create the WorkflowMonitor!");
-			e.printStackTrace();
-			System.exit(-11);
-		}
-		
-		WorkflowDataManager manager = new WorkflowDataManager(wfMonitor);
-		
-		try {
+			WorkflowMonitor wfMonitor = WorkflowMonitorFactory.newInstance().newWorkflowMonitor();
+			
+			WorkflowDataManager manager = new WorkflowDataManager(wfMonitor);
+
+			// --- Part 2 --- //
 			Endpoint wfControl = Endpoint.create(new WorkflowController(manager));
 			wfControl.setExecutor(Executors.newFixedThreadPool(MAX_THREADS));
 			wfControl.publish(wfControlURL);
 			System.out.println("The service was published at: "+wfControlURL);
-			
+				
 			Endpoint wfInfo = Endpoint.create(new WorkflowInformation(manager));
 			wfInfo.setExecutor(Executors.newFixedThreadPool(MAX_THREADS));
 			wfInfo.publish(wfInfoURL);
 			System.out.println("The service was published at: "+wfInfoURL);
 		}
+		catch (FactoryConfigurationError e) {
+			System.err.println("Configuration Error! Impossible to create the WorkflowMonitorFactory!");
+			e.printStackTrace();
+		}
+		catch (WorkflowMonitorException e) {
+			System.err.println("Error! Impossible to create the WorkflowMonitor!");
+			e.printStackTrace();
+		}
 		catch(SecurityException | IllegalStateException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
-			System.exit(-1);
 		}
 	}
 
