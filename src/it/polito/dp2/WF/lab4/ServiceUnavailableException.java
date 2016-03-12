@@ -2,6 +2,11 @@ package it.polito.dp2.WF.lab4;
 
 public class ServiceUnavailableException extends Exception {
 
+	/**
+	 * Required from eclipse, generated automatically
+	 */
+	private static final long serialVersionUID = 6922358814830727386L;
+
 	public ServiceUnavailableException() {
 	}
 
